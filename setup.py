@@ -1,0 +1,11 @@
+from setuptools import setup
+
+
+
+packages = ['pyalp']
+
+setup(
+    name='pyalp',
+    version='0.1.0',
+    packages=packages,
+)
