@@ -24,7 +24,10 @@ lib64/
 parts/
 sdist/
 var/
+<<<<<<< HEAD
 wheels/
+=======
+>>>>>>> a764f18fdd9aefd4200101d7ee676b2c4bb861b9
 *.egg-info/
 .installed.cfg
 *.egg
@@ -71,7 +74,11 @@ docs/_build/
 # PyBuilder
 target/
 
+<<<<<<< HEAD
 # Jupyter Notebook
+=======
+# IPython Notebook
+>>>>>>> a764f18fdd9aefd4200101d7ee676b2c4bb861b9
 .ipynb_checkpoints
 
 # pyenv
@@ -84,7 +91,10 @@ celerybeat-schedule
 .env
 
 # virtualenv
+<<<<<<< HEAD
 .venv/
+=======
+>>>>>>> a764f18fdd9aefd4200101d7ee676b2c4bb861b9
 venv/
 ENV/
 
@@ -92,4 +102,8 @@ ENV/
 .spyderproject
 
 # Rope project settings
+<<<<<<< HEAD
 .ropeproject
+=======
+.ropeproject
+>>>>>>> a764f18fdd9aefd4200101d7ee676b2c4bb861b9
