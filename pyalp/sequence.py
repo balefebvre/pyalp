@@ -27,8 +27,8 @@ class White(Sequence):
 
     TODO complete...'''
     def __init__(self):
-        bit_planes = 1
-        pic_num = 1
+        bit_planes = 1 # bit depth of the pictures
+        pic_num = 1 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
         self.seq_repeat = 10000 # TODO remove useless parameter...
 
@@ -92,12 +92,12 @@ class BlackWhite(Sequence):
 
     TODO complete...
     '''
-    def __init__(self):
-        bit_planes = 1 # binary frames
-        pic_num = 2 # two frames
+    def __init__(self, infinite_loop=False):
+        bit_planes = 1 # bit depth of the pictures
+        pic_num = 2 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
-        self.picture_time = 20000 # ns (i.e. 50 Hz)
-        self.infinite_loop = True
+        self.picture_time = 20000 # µs (i.e. 50 Hz)
+        self.infinite_loop = infinite_loop
 
     def get_user_array(self, device):
         '''Get frames'''

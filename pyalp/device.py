@@ -3,6 +3,8 @@ from ctypes import c_long, c_ulong, byref, cast
 
 from . import api
 from .base.constant import *
+from .protocol import Protocol
+from .sequence import Sequence
 
 
 
@@ -103,10 +105,14 @@ class Device(object):
                     self.wait_completion()
                 else:
                     self.wait_interuption()
-        else: # TODO test if is instance of Sequence...
+        else if isinstance(protocol, Protocol):
+            protocol.project()
+        else if isinstance(protocol, Sequence):
             sequence = protocol
             sequence.display(self)
             self.wait()
+        else:
+            raise NotImplementedError("pyalp.device.display")
         return
 
     def allocate(self, sequence):
@@ -169,20 +175,24 @@ class Device(object):
         else:
             raise Exception("AlpSeqPut: {}".format(ret_val))
 
-    def start(self, sequence):
+    def start(self, sequence, infinite_loop=False):
         '''Start sequence'''
         DeviceId = c_ulong(self.id)
         SequenceId = c_ulong(sequence.id)
-        if sequence.infinite_loop:
+        if infinite_loop:
             # Launch sequence with an infinite number of loops
             ret_val = api.AlpProjStartCont(DeviceId, SequenceId)
+            if ret_val == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjStartCont: {}".format(ret_val))
         else:
             # Launch sequence with a finite number of loops
             ret_val = api.AlpProjStart(DeviceId, SequenceId)
-        if ret_val == ALP_OK:
-            return
-        else:
-            raise Exception("AlpProjStart: {}".format(ret_val))
+            if ret_val == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjStart: {}".format(ret_val))
 
     def free(self, sequence):
         '''Free sequence'''
@@ -194,17 +204,26 @@ class Device(object):
         else:
             raise Exception("AlpSeqFree: {}".format(ret_val))
 
-    def wait(self):
+    def wait(self, infinite_loop=False):
         '''Wait sequence completion'''
         DeviceId = c_ulong(self.id)
-        ret_val = api.AlpProjWait(DeviceId)
-        if ret_val == ALP_OK:
-            return
+        if infinite_loop:
+            _ = input("Press Enter to stop projection...\n")
+            DeviceId = c_ulong(self.id)
+            ret_val = api.AlpProjHalt(DeviceId)
+            if ret_val == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjHalt: {}".format(ret_val))
         else:
-            raise Exception("AlpProjWait: {}".format(ret_val))
+            ret_val = api.AlpProjWait(DeviceId)
+            if ret_val == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjWait: {}".format(ret_val))
 
-    def wait_interuption(self):
-        '''Wait sequence interuption'''
+    def wait_interruption(self):
+        '''Wait sequence interruption'''
         _ = input("Press Enter to stop projection...\n")
         DeviceId = c_ulong(self.id)
         ret_val = api.AlpProjHalt(DeviceId)

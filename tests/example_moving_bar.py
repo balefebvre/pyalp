@@ -6,7 +6,7 @@ import pyalp as alp
 dev = alp.device.allocate()
 
 # Define protocol
-pro = alp.protocol.BlackWhite()
+pro = alp.protocol.MovingBar()
 
 # Display protocol
-dev.display(pro)
+dev.display(protocol)
