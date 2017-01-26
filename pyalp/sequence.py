@@ -38,7 +38,8 @@ class White(Sequence):
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
-        _, max_, dtype = numpy.iinfo(dtype)
+        max_ = numpy.iinfo(dtype).max
+        dtype = numpy.iinfo(dtype).dtype
         frame = max_ * numpy.ones(size, dtype=dtype)
         return frame
 
