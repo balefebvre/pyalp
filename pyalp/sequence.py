@@ -72,7 +72,8 @@ class Black(Sequence):
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
-        min_, _, dtype = numpy.iinfo(dtype)
+        min_ = numpy.iinfo(dtype).min
+        dtype = numpy.iinfo(dtype).dtype
         frame = min_ * numpy.ones(size, dtype=dtype)
         return frame
 
