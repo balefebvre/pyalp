@@ -5,9 +5,8 @@ import numpy
 
 def numpy_to_ctypes(a):
     '''TODO add doc...'''
+    s = a.tobytes()
     size = a.shape[0]
-    a = a.view('c') # convert uint8 values to char values
-    s = ''.join(a) # convert char array to bytes literal
     b = ctypes.create_string_buffer(s, size)
     return b
 

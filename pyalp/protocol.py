@@ -18,10 +18,10 @@ class White(Protocol):
 
     TODO complete...
     '''
-    def __init__(self, rate):
+    def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
         self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 * self.rate) # µs (time between the start of two consecutive pictures)
+        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 
@@ -49,10 +49,10 @@ class Black(Protocol):
 
     TODO complete...
     '''
-    def __init__(self, rate, nb_repetitions=None, infinite_loop=False):
+    def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
         self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 * self.rate) # µs (time between the start of two consecutive pictures)
+        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 
@@ -80,10 +80,10 @@ class BlackWhite(Protocol):
 
     TODO complete...
     '''
-    def __init__(self, rate, nb_repetitions=None, infinite_loop=False):
+    def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
         self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 * self.rate) # µs (time between the start of two consecutive pictures)
+        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 

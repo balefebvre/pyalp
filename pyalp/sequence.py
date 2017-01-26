@@ -105,7 +105,9 @@ class BlackWhite(Sequence):
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
-        min_, max_, dtype = numpy.iinfo(dtype)
+        min_ = numpy.iinfo(dtype).min
+        max_ = numpy.iinfo(dtype).max
+        dtype = numpy.iinfo(dtype).dtype
         frames = numpy.kron(numpy.array([min_, max_], dtype=dtype), numpy.ones(size, dtype=dtype))
         return frames
 

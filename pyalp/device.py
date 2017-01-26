@@ -2,6 +2,7 @@ import ctypes
 from ctypes import c_long, c_ulong, byref, cast
 
 from . import api
+from . import utils
 from .base.constant import *
 from .protocol import Protocol
 from .sequence import Sequence
@@ -106,7 +107,7 @@ class Device(object):
                 else:
                     self.wait_interuption()
         elif isinstance(protocol, Protocol):
-            protocol.project()
+            protocol.project(self)
         elif isinstance(protocol, Sequence):
             sequence = protocol
             sequence.display(self)
@@ -185,7 +186,7 @@ class Device(object):
         PicOffset = c_ulong(sequence.pic_offset)
         PicLoad = c_ulong(sequence.pic_load)
         UserArray = utils.numpy_to_ctypes(sequence.get_user_array(self))
-        UserArrayPtr = cast(UserArray, cast.c_void_p)
+        UserArrayPtr = cast(UserArray, ctypes.c_void_p)
         ret_val = api.AlpSeqPut(DeviceId, SequenceId, PicOffset, PicLoad, UserArrayPtr)
         if ret_val == ALP_OK:
             return
