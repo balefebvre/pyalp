@@ -1,4 +1,3 @@
-from . import device, sequence, protocol
 from .base import get_path, load_api
 
 
@@ -10,10 +9,16 @@ path = get_path()
 api = load_api(path)
 
 
+
+
+from . import device, sequence, protocol
+
+
+
 __all__ = [
+    'path',
+    'api',
     'device',
     'sequence',
     'protocol',
-    'path',
-    'api',
 ]

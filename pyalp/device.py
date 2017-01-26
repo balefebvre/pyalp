@@ -105,9 +105,9 @@ class Device(object):
                     self.wait_completion()
                 else:
                     self.wait_interuption()
-        else if isinstance(protocol, Protocol):
+        elif isinstance(protocol, Protocol):
             protocol.project()
-        else if isinstance(protocol, Sequence):
+        elif isinstance(protocol, Sequence):
             sequence = protocol
             sequence.display(self)
             self.wait()

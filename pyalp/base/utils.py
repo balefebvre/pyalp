@@ -1,6 +1,6 @@
 import os
 
-from .api import Api
+from . import Api
 
 
 
@@ -20,6 +20,7 @@ def load_api(path):
     '''TODO add doc...'''
     try:
         api = Api(path)
+        return api
     except OSError as error:
         # TODO enhance message...
         message = "ALP DLL '{}' not found!".format(path)

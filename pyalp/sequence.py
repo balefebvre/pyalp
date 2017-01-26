@@ -2,6 +2,7 @@ import ctypes
 import numpy
 
 from pyalp import *
+from .base.constant import *
 
 
 
