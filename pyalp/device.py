@@ -1,6 +1,8 @@
 import ctypes
+from ctypes import c_long, c_ulong, byref, cast
 
-from pyalp import *
+from . import api
+from .base.constant import *
 
 
 
@@ -18,13 +20,13 @@ class Device(object):
     def __init__(self, device_number):
         '''Allocate an ALP hardware system (board set)'''
         # Save input parameter
-        self.device_number = device_number
+        self.nb = device_number
         # Allocate device
-        DeviceNumber = ctypes.c_long(device_number)
-        InitFlag = ctypes.c_long(ALP_DEFAULT)
-        DeviceId = ctypes.c_ulong(ALP_DEFAULT)
-        DeviceIdPtr = ctypes.byref(DeviceId)
-        ret_val = alp.api.AlpDevAlloc(DeviceNumber, InitFlag, DeviceIdPtr)
+        DeviceNumber = c_long(device_number)
+        InitFlag = c_long(ALP_DEFAULT)
+        DeviceId = c_ulong(ALP_DEFAULT)
+        DeviceIdPtr = byref(DeviceId)
+        ret_val = api.AlpDevAlloc(DeviceNumber, InitFlag, DeviceIdPtr)
         if ret_val == ALP_OK:
             self.id = DeviceId.value
         else:
@@ -32,8 +34,8 @@ class Device(object):
 
     def __del__(self):
         '''Deallocate the ALP hardware system (board set)'''
-        DeviceId = ctypes.c_ulong(self.id)
-        ret_val = self.AlpDevFree(DeviceId)
+        DeviceId = c_ulong(self.id)
+        ret_val = api.AlpDevFree(DeviceId)
         if ret_val == ALP_OK:
             return
         else:
@@ -47,11 +49,11 @@ class Device(object):
     def get_dmd_type(self):
         '''Get DMD type'''
         # Inquire DMD type
-        DeviceId = ctypes.c_ulong(self.id)
-        InquireType = ctypes.c_long(ALP_DEV_DMDTYPE)
-        UserVar = ctypes.c_long(ALP_DEFAULT)
-        UserVarPtr = ctypes.byref(UserVar)
-        ret_val = alp.api.AlpDevInquire(DeviceId, InquireType, UserVarPtr)
+        DeviceId = c_ulong(self.id)
+        InquireType = c_long(ALP_DEV_DMDTYPE)
+        UserVar = c_long(ALP_DEFAULT)
+        UserVarPtr = byref(UserVar)
+        ret_val = api.AlpDevInquire(DeviceId, InquireType, UserVarPtr)
         if ret_val == ALP_OK:
             self.dmd_type = UserVar.value
             return self.dmd_type
@@ -109,12 +111,12 @@ class Device(object):
 
     def allocate(self, sequence):
         '''Allocate sequence'''
-        DeviceId = ctypes.c_ulong(self.id)
-        BitPlanes = ctypes.c_long(sequence.bit_planes)
-        PicNum = ctypes.c_long(sequence.pic_num)
-        SequenceId = ctypes.c_ulong(ALP_DEFAULT)
-        SequenceIdPtr = ctypes.byref(SequenceId)
-        ret_val = alp.api.AlpSeqAlloc(DeviceId, BitPlanes, PicNum, SequenceIdPtr)
+        DeviceId = c_ulong(self.id)
+        BitPlanes = c_long(sequence.bit_planes)
+        PicNum = c_long(sequence.pic_num)
+        SequenceId = c_ulong(ALP_DEFAULT)
+        SequenceIdPtr = byref(SequenceId)
+        ret_val = api.AlpSeqAlloc(DeviceId, BitPlanes, PicNum, SequenceIdPtr)
         if ret_val == ALP_OK:
             sequence.id = SequenceId.value
             return
@@ -123,14 +125,14 @@ class Device(object):
 
     def control(self, sequence):
         '''Control sequence'''
-        DeviceId = ctypes.c_ulong(self.id)
-        SequenceId = ctypes.c_ulong(sequence.id)
+        DeviceId = c_ulong(self.id)
+        SequenceId = c_ulong(sequence.id)
         if sequence.n_repetitions is None:
             pass
         else:
-            ControlType = ctypes.c_long(ALP_SEQ_REPEAT)
-            ControlValue = ctypes.c_long(sequence.n_repetitions)
-            ret_val = alp.api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
+            ControlType = c_long(ALP_SEQ_REPEAT)
+            ControlValue = c_long(sequence.n_repetitions)
+            ret_val = api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
             if ret_val == ALP_OK:
                 pass
             else:
@@ -141,13 +143,13 @@ class Device(object):
     def timing(self, sequence):
         '''Set sequence timing'''
         # TODO avoid set timing if possible (i.e. only default values)...
-        DeviceId = ctypes.c_ulong(self.id)
-        IlluminateTime = ctypes.c_long(sequence.illuminate_time)
-        PictureTime = ctypes.c_long(sequence.picture_time)
-        SynchDelay = ctypes.c_long(sequence.synch_delay)
-        SynchPulseWidth = ctypes.c_long(sequence.synch_pulse_width)
-        TriggerInDelay = ctypes.c_long(sequence.trigger_in_delay)
-        ret_val = alp.api.AlpSeqTiming(DeviceId, SequenceId, IlluminateTime, PictureTime, SynchDelay, SynchPulseWidth, TriggerInDelay)
+        DeviceId = c_ulong(self.id)
+        IlluminateTime = c_long(sequence.illuminate_time)
+        PictureTime = c_long(sequence.picture_time)
+        SynchDelay = c_long(sequence.synch_delay)
+        SynchPulseWidth = c_long(sequence.synch_pulse_width)
+        TriggerInDelay = c_long(sequence.trigger_in_delay)
+        ret_val = api.AlpSeqTiming(DeviceId, SequenceId, IlluminateTime, PictureTime, SynchDelay, SynchPulseWidth, TriggerInDelay)
         if ret_val == ALP_OK:
             return
         else:
@@ -155,13 +157,13 @@ class Device(object):
 
     def put(self, sequence): #sequence_id, user_array, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
         '''Put sequence'''
-        DeviceId = ctypes.c_ulong(self.id)
-        SequenceId = ctypes.c_ulong(sequence.id)
-        PicOffset = ctypes.c_ulong(sequence.pic_offset)
-        PicLoad = ctypes.c_ulong(sequence.pic_load)
+        DeviceId = c_ulong(self.id)
+        SequenceId = c_ulong(sequence.id)
+        PicOffset = c_ulong(sequence.pic_offset)
+        PicLoad = c_ulong(sequence.pic_load)
         UserArray = utils.numpy_to_ctypes(sequence.get_user_array(self))
-        UserArrayPtr = ctypes.cast(UserArray, cast.c_void_p)
-        ret_val = alp.api.AlpSeqPut(DeviceId, SequenceId, PicOffset, PicLoad, UserArrayPtr)
+        UserArrayPtr = cast(UserArray, cast.c_void_p)
+        ret_val = api.AlpSeqPut(DeviceId, SequenceId, PicOffset, PicLoad, UserArrayPtr)
         if ret_val == ALP_OK:
             return
         else:
@@ -169,14 +171,14 @@ class Device(object):
 
     def start(self, sequence):
         '''Start sequence'''
-        DeviceId = ctypes.c_ulong(self.id)
-        SequenceId = ctypes.c_ulong(sequence.id)
+        DeviceId = c_ulong(self.id)
+        SequenceId = c_ulong(sequence.id)
         if sequence.infinite_loop:
             # Launch sequence with an infinite number of loops
-            ret_val = alp.api.AlpProjStartCont(DeviceId, SequenceId)
+            ret_val = api.AlpProjStartCont(DeviceId, SequenceId)
         else:
             # Launch sequence with a finite number of loops
-            ret_val = alp.api.AlpProjStart(DeviceId, SequenceId)
+            ret_val = api.AlpProjStart(DeviceId, SequenceId)
         if ret_val == ALP_OK:
             return
         else:
@@ -184,9 +186,9 @@ class Device(object):
 
     def free(self, sequence):
         '''Free sequence'''
-        DeviceId = ctypes.c_ulong(self.id)
-        SequenceId = ctypes.c_ulong(sequence.id)
-        ret_val = alp.api.AlpSeqFree(DeviceId, SequenceId)
+        DeviceId = c_ulong(self.id)
+        SequenceId = c_ulong(sequence.id)
+        ret_val = api.AlpSeqFree(DeviceId, SequenceId)
         if ret_val == ALP_OK:
             return
         else:
@@ -194,8 +196,8 @@ class Device(object):
 
     def wait(self):
         '''Wait sequence completion'''
-        DeviceId = ctypes.c_ulong(self.id)
-        ret_val = alp.api.AlpProjWait(DeviceId)
+        DeviceId = c_ulong(self.id)
+        ret_val = api.AlpProjWait(DeviceId)
         if ret_val == ALP_OK:
             return
         else:
@@ -204,18 +206,18 @@ class Device(object):
     def wait_interuption(self):
         '''Wait sequence interuption'''
         _ = input("Press Enter to stop projection...\n")
-        DeviceId = ctypes.c_ulong(self.id)
-        ret_val = alp.api.AlpProjHalt(DeviceId)
+        DeviceId = c_ulong(self.id)
+        ret_val = api.AlpProjHalt(DeviceId)
         if ret_val == ALP_OK:
             return
         else:
             raise Exception("AlpProjHalt: {}".format(ret_val))
 
     def invert_projection(self):
-        DeviceId = ctypes.c_ulong(self.id)
-        ControlType = ctypes.c_long(ALP_PROJ_INVERSION)
-        ControlValue = ctypes.c_long(not(ALP_DEFAULT)) # TODO check if correct...
-        ret_val = alp.api.AlpProjControl()
+        DeviceId = c_ulong(self.id)
+        ControlType = c_long(ALP_PROJ_INVERSION)
+        ControlValue = c_long(not(ALP_DEFAULT)) # TODO check if correct...
+        ret_val = api.AlpProjControl()
         return
 
     def control_projection(self, mode=None, inversion=None, upside_down=None, wait_until=None, step=None, queue_mode=None, abort_sequence=None, abort_frame=None, reset_queue=None):
@@ -265,10 +267,10 @@ class Device(object):
 
     def _control_projection(self, control_type, control_value):
         '''TODO add doc...'''
-        DeviceId = ctypes.c_ulong(self.id)
-        ControlType = ctypes.c_long(control_type)
-        ControlValue = ctypes.c_long(control_value)
-        ret_val = alp.api.AlpProjControl(DeviceId, ControlType, ControlValue)
+        DeviceId = c_ulong(self.id)
+        ControlType = c_long(control_type)
+        ControlValue = c_long(control_value)
+        ret_val = api.AlpProjControl(DeviceId, ControlType, ControlValue)
         if ret_val == ALP_OK:
             return
         else:
@@ -276,11 +278,11 @@ class Device(object):
 
     def inquire_projection(self, inquire_type):
         if type is 'progress':
-            DeviceId = ctypes.c_ulong(self.id)
-            InquireType = ctypes.c_long(ALP_PROJ_PROGRESS)
+            DeviceId = c_ulong(self.id)
+            InquireType = c_long(ALP_PROJ_PROGRESS)
             UserSruct = tAlpProjProgress()
-            UserSructPtr = ctypes.byref(UserSruct)
-            ret_val = p.api.AlpProjInquireEx(DeviceId, InquireType, UserSructPtr)
+            UserSructPtr = byref(UserSruct)
+            ret_val = api.AlpProjInquireEx(DeviceId, InquireType, UserSructPtr)
             if ret_val == ALP_OK:
                 inquire_value = UserSruct.value
                 return inquire_value

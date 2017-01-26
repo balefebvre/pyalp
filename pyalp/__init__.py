@@ -1,8 +1,5 @@
-import os
-
-from pyalp.base import *
-
-from pyalp import device, sequence, protocol
+from . import device, sequence, protocol
+from .base import get_path, load_api
 
 
 
