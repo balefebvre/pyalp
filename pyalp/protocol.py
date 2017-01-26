@@ -13,36 +13,6 @@ class Protocol(object):
         pass
 
 
-# class White(Sequence):
-#     '''TODO add doc...
-#
-#     TODO complete...'''
-#     def __init__(self):
-#         bit_planes = 1
-#         pic_num = 1
-#         Sequence.__init__(self, bit_planes, pic_num)
-#         self.seq_repeat = 10000 # TODO remove useless parameter...
-#
-#     def get_user_array(self, device):
-#         '''Get user array'''
-#         dtype = 'uint8'
-#         width, height = device.get_resolution()
-#         size = width * height
-#         _, max_, dtype = numpy.iinfo(dtype)
-#         frame = max_ * numpy.ones(size, dtype=dtype)
-#         return frame
-#
-#     def display(self, device):
-#         '''Display sequence'''
-#         # Upload and start sequence on device
-#         sequence_id = device.allocate(self.bit_planes, self.pic_num)
-#         device.control(sequence_id, seq_repeat=self.seq_repeat)
-#         device.put(sequence_id, self.get_user_array(device), pic_load=self.pic_num)
-#         device.timing(sequence_id)
-#         device.start(sequence_id)
-#         # Save parameter
-#         self.sequence_id = sequence_id
-#         return
 class White(Protocol):
     '''TODO add doc...
 
@@ -74,38 +44,6 @@ class White(Protocol):
         device.free(sequence)
 
 
-
-# class Black(Sequence):
-#     '''TODO add doc...
-#
-#     TODO complete...
-#     '''
-#     def __init__(self):
-#         bit_planes = 1
-#         pic_num = 1
-#         Sequence.__init__(self, bit_planes, pic_num)
-#         self.seq_repeat = 10000 # TODO remove useless parameter...
-#
-#     def get_user_array(self, device):
-#         '''Get user array'''
-#         dtype = 'uint8'
-#         width, height = device.get_resolution()
-#         size = width * height
-#         min_, _, dtype = numpy.iinfo(dtype)
-#         frame = min_ * numpy.ones(size, dtype=dtype)
-#         return frame
-#
-#     def display(self, device):
-#         '''Display sequence'''
-#         # Upload and start sequence one device
-#         sequence_id = device.allocate(self.bit_planes, self.pic_num)
-#         device.control(sequence_id, seq_repeat=self.seq_repeat)
-#         device.put(sequence_id, self.get_user_array(device), pic_load=self.pic_num)
-#         device.timing(sequence_id)
-#         device.start(sequence_id)
-#         # Save parameter
-#         self.sequence_id = sequence_id
-#         return
 class Black(Protocol):
     '''TODO add doc...
 
@@ -115,36 +53,6 @@ class Black(Protocol):
         pass
 
 
-# class BlackWhite(Sequence):
-#     '''TODO add doc...
-#
-#     TODO complete...
-#     '''
-#     def __init__(self):
-#         bit_planes = 1 # binary frames
-#         pic_num = 2 # two frames
-#         Sequence.__init__(self, bit_planes, pic_num)
-#         self.picture_time = 20000 # ns (i.e. 50 Hz)
-#         self.infinite_loop = True
-#
-#     def get_user_array(self, device):
-#         '''Get frames'''
-#         dtype = 'uint8'
-#         width, height = device.get_resolution()
-#         size = width * height
-#         min_, max_, dtype = numpy.iinfo(dtype)
-#         frames = numpy.kron(numpy.array([min_, max_], dtype=dtype), numpy.ones(size, dtype=dtype))
-#         return frames
-#
-#     def display(self, device):
-#         '''Display sequence'''
-#         sequence_id = device.allocate(self.bit_planes, self.pic_num)
-#         device.put(sequence_id, self.get_user_array(device), pic_load=self.pic_num)
-#         device.timing(sequence_id, picture_time=self.picture_time)
-#         device.start(sequence_id, infinite_loop=self.infinite_loop)
-#         # Save parameter
-#         self.sequence_id = sequence_id
-#         return
 class BlackWhite(Protocol):
     '''TODO add doc...
 
@@ -248,7 +156,6 @@ class Checkerboard(Protocol):
         # Clean second sequence
         device.free(sequence_2)
         return
-
 
 
 class MovingBar(Protocol):
