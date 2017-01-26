@@ -129,21 +129,38 @@ class Device(object):
         else:
             raise Exception("AlpSeqAlloc: {}".format(ret_val))
 
-    def control(self, sequence):
+    # def control(self, sequence):
+    #     '''Control sequence'''
+    #     DeviceId = c_ulong(self.id)
+    #     SequenceId = c_ulong(sequence.id)
+    #     if sequence.n_repetitions is None:
+    #         pass
+    #     else:
+    #         ControlType = c_long(ALP_SEQ_REPEAT)
+    #         ControlValue = c_long(sequence.n_repetitions)
+    #         ret_val = api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
+    #         if ret_val == ALP_OK:
+    #             pass
+    #         else:
+    #             raise Exception("AlpSeqControl: {}".format(ret_val))
+    #     # TODO add other controls...
+    #     return
+
+    def control(self, sequence, control_type, control_value):
         '''Control sequence'''
         DeviceId = c_ulong(self.id)
         SequenceId = c_ulong(sequence.id)
-        if sequence.n_repetitions is None:
-            pass
+        ControlType = c_long(control_type)
+        ControlValue = c_long(control_value)
+        ret_val = api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
+        if ret_val == ALP_OK:
+            return
         else:
-            ControlType = c_long(ALP_SEQ_REPEAT)
-            ControlValue = c_long(sequence.n_repetitions)
-            ret_val = api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
-            if ret_val == ALP_OK:
-                pass
-            else:
-                raise Exception("AlpSeqControl: {}".format(ret_val))
-        # TODO add other controls...
+            raise Exception("AlpSeqControl: {}".format(ret_val))
+
+    def control_repetitions(self, sequence, nb_repetitions):
+        '''Control sequence repetitions'''
+        self.control(sequence, ALP_SEQ_REPEAT, nb_repetitions)
         return
 
     def timing(self, sequence):

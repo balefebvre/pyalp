@@ -70,11 +70,13 @@ class BlackWhite(Protocol):
         sequence = alp.sequence.BlackWhite()
         # Set up sequence
         device.allocate(sequence)
-        device.control(sequence)
-        device.timing(sequence)
+        if self.nb_repetitions is not None and not self.infinite_loop:
+            device.control_repetitions(sequence, self.nb_repetitions)
+        # TODO manage timing...
+        # device.timing(sequence)
         device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
         # Start sequence
-        device.start(sequence, nb_repetitions=self.nb_repetitions, infinite_loop=self.infinite_loop)
+        device.start(sequence, infinite_loop=self.infinite_loop)
         # Wait sequence end
         device.wait(infinite_loop=self.infinite_loop)
         # Clean sequence
