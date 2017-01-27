@@ -17,6 +17,11 @@ class Sequence(object):
         self.pic_num = pic_num
         self.pic_offset = pic_offset
         self.pic_load = pic_load
+        self.illuminate_time = ALP_DEFAULT
+        self.picture_time = int(1.0e6 / 50.0)
+        self.synch_delay = ALP_DEFAULT
+        self.synch_pulse_width = ALP_DEFAULT
+        self.trigger_in_delay = ALP_DEFAULT
         # Save additional parameter
         self.sequence_id = ALP_DEFAULT
 
@@ -103,7 +108,7 @@ class FullField(Sequence):
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
-        frames = numpy.kron(footprint_array, numpy.ones(size, dtype='uint8'))
+        frames = numpy.kron(self.footprint_array, numpy.ones(size, dtype='uint8'))
         return frames
 
 
@@ -149,7 +154,7 @@ class Checkerboard(Sequence):
         # TODO assert(isinstance(n_repetitions, int))
         # TODO assert(0 <= sequence.n_repetitions and sequence.n_repetitions <= 1048576)
         bit_planes = 8 # bit depth of the pictures
-        pic_num = 20 # number of pictures
+        pic_num = 50 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
         # TODO remove following lines...
         # self.picture_time = int(1.0e6 / self.rate) # ns
@@ -179,7 +184,13 @@ class Checkerboard(Sequence):
         x_max = x_min + self.checkerboard_size
         y_min = (height - self.checkerboard_size) // 2
         y_max = y_min + self.checkerboard_size
+        # print("data: {}".format(data))
+        print("data.shape: {}".format(data.shape))
         frames[x_min:x_max, y_min:y_max, :] = numpy.kron(data, numpy.ones((self.check_size, self.check_size, 1)))
+        print("frames: {}".format(frames))
+        print("frames.shape: {}".format(frames))
+        print("numpy.amin(frames): {}".format(numpy.amin(frames)))
+        print("numpy.amax(frames): {}".format(numpy.amax(frames)))
         # Return frames
         return frames
 

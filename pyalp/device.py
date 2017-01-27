@@ -169,6 +169,7 @@ class Device(object):
         '''Set sequence timing'''
         # TODO avoid set timing if possible (i.e. only default values)...
         DeviceId = c_ulong(self.id)
+        SequenceId = c_ulong(sequence.id)
         IlluminateTime = c_long(sequence.illuminate_time)
         PictureTime = c_long(sequence.picture_time)
         SynchDelay = c_long(sequence.synch_delay)

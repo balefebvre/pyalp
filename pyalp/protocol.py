@@ -116,7 +116,7 @@ class Checkerboard(Protocol):
         self.rate = rate # Hz
         self.picture_time = int(1.0e6 / self.rate) # µs
         self.nb_repetitions = nb_repetitions
-        self.square_size = 30 # px
+        self.square_size = 5 # px
         self.checkerboard_size = 5 * self.square_size # px
 
     def wait(self, device, sleep_duration=30.0e-3):
@@ -130,7 +130,7 @@ class Checkerboard(Protocol):
 
     def project(self, device):
         '''Project checkerboard protocol'''
-        device.control_projection(inversion=True, queue_mode=True) # TODO check if queue mode toggle should come after allocations...
+        device.control_projection(inversion=False, queue_mode=True) # TODO check if queue mode toggle should come after allocations...
         sequence_1 = alp.sequence.Checkerboard(seed=42)
         sequence_2 = alp.sequence.Checkerboard(seed=None)
         # Setup first sequence
@@ -184,6 +184,38 @@ class Checkerboard(Protocol):
         device.wait()
         # Clean second sequence
         device.free(sequence_2)
+        return
+
+
+class FullField(Protocol):
+    '''TODO add doc...
+
+    TODO complete...
+    '''
+    def __init__(self, footprint_array, rate=500.0, nb_repetitions=10, infinite_loop=False):
+        Protocol.__init__(self)
+        self.rate = rate # Hz
+        self.picture_time = int(1.0e6 / self.rate) # µs
+        self.infinite_loop = infinite_loop
+        self.nb_repetitions = nb_repetitions
+        self.footprint_array = footprint_array
+
+    def project(self, device):
+        device.control_projection(inversion=True)
+        sequence = alp.sequence.FullField(self.footprint_array)
+        # Set up sequence
+        device.allocate(sequence)
+        if self.nb_repetitions is not None and not self.infinite_loop:
+            device.control_repetitions(sequence, self.nb_repetitions)
+        # TODO manage timing...
+        device.timing(sequence)
+        device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        # Start sequence
+        device.start(sequence, infinite_loop=self.infinite_loop)
+        # Wait sequence end
+        device.wait(infinite_loop=self.infinite_loop)
+        # Clean sequence
+        device.free(sequence)
         return
 
 
