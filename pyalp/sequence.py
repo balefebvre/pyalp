@@ -11,10 +11,12 @@ class Sequence(object):
 
     TODO complete...
     '''
-    def __init__(self, bit_planes, pic_num):
+    def __init__(self, bit_planes, pic_num, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
         # Save input parameters
         self.bit_planes = bit_planes
         self.pic_num = pic_num
+        self.pic_offset = pic_offset
+        self.pic_load = pic_load
         # Save additional parameter
         self.sequence_id = ALP_DEFAULT
 
