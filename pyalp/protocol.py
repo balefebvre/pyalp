@@ -169,7 +169,6 @@ class Checkerboard(Protocol):
             # Wait end of second sequence
             self.wait(device)
             # Manage second sequence
-            device.wait(sequence_2)
             device.free(sequence_2)
             sequence_2 = alp.sequence.Checkerboard(seed=None)
             device.allocate(sequence_2)
@@ -182,7 +181,7 @@ class Checkerboard(Protocol):
         # Clean first sequence
         device.free(sequence_1)
         # Wait end of second sequence
-        self.wait(device)
+        device.wait()
         # Clean second sequence
         device.free(sequence_2)
         return
