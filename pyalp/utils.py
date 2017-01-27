@@ -6,7 +6,11 @@ import numpy
 def numpy_to_ctypes(a):
     '''TODO add doc...'''
     s = a.tobytes()
-    size = a.shape[0]
+    # size = a.shape[0]
+    size = a.size
+    # print("size: {}".format(size))
+    # print("a[:5]: {}".format(a[:5]))
+    # print("a.size: {}".format(a.size))
     b = ctypes.create_string_buffer(s, size)
     return b
 

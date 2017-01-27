@@ -4,6 +4,7 @@ from ctypes import c_long, c_ulong, byref, cast
 from . import api
 from . import utils
 from .base.constant import *
+from .base.type import *
 from .protocol import Protocol
 from .sequence import Sequence
 
@@ -314,14 +315,19 @@ class Device(object):
             raise Exception("AlpProjControl: {}".format(ret_val))
 
     def inquire_projection(self, inquire_type):
-        if type is 'progress':
+        if inquire_type is 'progress':
             DeviceId = c_ulong(self.id)
             InquireType = c_long(ALP_PROJ_PROGRESS)
-            UserSruct = tAlpProjProgress()
-            UserSructPtr = byref(UserSruct)
-            ret_val = api.AlpProjInquireEx(DeviceId, InquireType, UserSructPtr)
+            UserStruct = tAlpProjProgress()
+            UserStructPtr = byref(UserStruct)
+            ret_val = api.AlpProjInquireEx(DeviceId, InquireType, UserStructPtr)
             if ret_val == ALP_OK:
-                inquire_value = UserSruct.value
+                # TODO clean...
+                # print("#####")
+                # print("UserSruct: {}".format(UserStruct))
+                # print("dir(UserSruct): {}".format(dir(UserStruct)))
+                # inquire_value = UserStruct.value
+                inquire_value = UserStruct
                 return inquire_value
             else:
                 raise Exception("AlpProjInquireEx: {}".format(ret_val))
