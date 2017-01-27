@@ -6,10 +6,10 @@ Vialux.
 
 # TODOs
 
-- [ ] Test the allocation of the ALP device
-- [ ] Test the white sequence (i.e. generation & display)
-- [ ] Test the black sequence (i.e. generation & display)
-- [ ] Test the black & white sequence (i.e. generation & display)
+- [x] Test the allocation of the ALP device
+- [x] Test the white sequence (i.e. generation & display)
+- [x] Test the black sequence (i.e. generation & display)
+- [x] Test the black & white sequence (i.e. generation & display)
 - [ ] Test the full-field sequence (i.e. generation & display)
 - [ ] Test the checkerboard sequence (i.e. generation & display)
 - [ ] Generate moving bar sequence
