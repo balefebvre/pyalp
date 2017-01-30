@@ -1,4 +1,5 @@
 import ctypes
+from ctypes import c_long, c_ulong, byref, cast
 import numpy
 
 from pyalp import *
@@ -38,6 +39,7 @@ class Sequence(object):
         UserVarPtr = byref(UserVar)
         ret_val = api.AlpSeqInquire(DeviceId, SequenceId, InquireType, UserVarPtr)
         if ret_val == ALP_OK:
+            ret_val = UserVar.value
             return ret_val
         else:
             raise Exception("AlpSeqInquire: {}".format(ret_val))
@@ -152,7 +154,7 @@ class Sequence(object):
             'off time': self.inquire_off_time(device),
             # TODO complete...
             'data format': self.inquire_data_format(device),
-            'sequence put lock': self.inquire_sequence_put_lock(device),
+            # 'sequence put lock': self.inquire_sequence_put_lock(device),
             # TODO complete...
         }
         return settings
