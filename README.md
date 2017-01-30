@@ -10,12 +10,16 @@ Vialux.
 - [x] Test the white sequence (i.e. generation & display)
 - [x] Test the black sequence (i.e. generation & display)
 - [x] Test the black & white sequence (i.e. generation & display)
-- [ ] Test the full-field sequence (i.e. generation & display)
+- [x] Test the full-field sequence (i.e. generation & display)
 - [ ] Test the checkerboard sequence (i.e. generation & display)
 - [ ] Generate moving bar sequence
 - [ ] Test the moving bar sequence (i.e. generation & display)
 - [ ] Generate moving bars sequence
 - [ ] Test the moving bars sequence (i.e. generation & display)
+- [x] Add inquiry mechanism for ALP device
+- [ ] Test inquiry mechanism for ALP device
+- [x] Add inquiry mechanism for sequence on ALP device
+- [ ] Test inquiry mechanism for sequence on ALP device
 
 
 
