@@ -58,6 +58,7 @@ class Device(object):
         UserVarPtr = byref(UserVar)
         ret_val = api.AlpDevInquire(DeviceId, InquireType, UserVarPtr)
         if ret_val == ALP_OK:
+            ret_val = UserVar.value
             return ret_val
         else:
             raise Exception("AlpDevInquire: {}".format(ret_val))
