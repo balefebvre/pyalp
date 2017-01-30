@@ -50,24 +50,27 @@ class Device(object):
         # Return DMD identifier
         return self.id
 
-    def get_dmd_type(self):
-        '''Get DMD type'''
-        # Inquire DMD type
+    def inquire(self, inquire_type):
+        '''Inquire a parameter setting og the ALP device'''
         DeviceId = c_ulong(self.id)
-        InquireType = c_long(ALP_DEV_DMDTYPE)
-        UserVar = c_long(ALP_DEFAULT)
+        InquireType = c_ulong(inquire_type)
+        UserVar = c_ulong(ALP_DEFAULT)
         UserVarPtr = byref(UserVar)
         ret_val = api.AlpDevInquire(DeviceId, InquireType, UserVarPtr)
         if ret_val == ALP_OK:
-            self.dmd_type = UserVar.value
-            return self.dmd_type
+            return ret_val
         else:
             raise Exception("AlpDevInquire: {}".format(ret_val))
+
+    def inquire_dmd_type(self):
+        '''Inquire DMD type'''
+        self.dmd_type = self.inquire(ALP_DEV_DMDTYPE)
+        return self.dmd_type
 
     def get_resolution(self):
         '''Get DMD resolution (in pixels)'''
         # Inquire DMD type
-        dmd_type = self.get_dmd_type()
+        dmd_type = self.inquire_dmd_type()
         # Retrieve DMD width and height
         # TODO clean following commented lines...
         if dmd_type in [ALP_DMDTYPE_XGA, ALP_DMDTYPE_XGA_055X, ALP_DMDTYPE_XGA_07A]:
@@ -96,6 +99,78 @@ class Device(object):
         self.resolution = self.width, self.height
         # Return DMD resolution
         return self.resolution
+
+    def inquire_number(self):
+        '''Inquire serial number of the ALP device'''
+        self.number = self.inquire(ALP_DEVICE_NUMBER)
+        return self.number
+
+    def inquire_version(self):
+        '''Inquire version number of the ALP device'''
+        self.version = self.inquire(ALP_VERSION)
+        return self.version
+
+    def inquire_available_memory(self):
+        '''Inquire available memory of the ALP device'''
+        self.available_memory = self.inquire(ALP_AVAIL_MEMORY)
+        return self.available_memory
+
+    def inquire_dmd_mode(self):
+        '''Inquire DMD mode of the ALP device'''
+        self.dmd_mode = self.inquire(ALP_DEV_DMD_MODE)
+        return self.dmd_mode
+
+    def inquire_display_height(self):
+        '''Inquire number of mirror rows on the DMD'''
+        self.display_height = self.inquire(ALP_DEV_DISPLAY_HEIGHT)
+        return self.display_height
+
+    def inquire_display_width(self):
+        '''Inquire number of mirror columns on the DMD'''
+        self.display_width = self.inquire(ALP_DEV_DISPLAY_WIDTH)
+        return self.display_width
+
+    def inquire_usb_connection(self):
+        '''Inquire the status of the USB connection'''
+        self.usb_connection = self.inquire(ALP_USB_CONNECTION)
+        return self.usb_connection
+
+    # # TODO ALP 4.2 only...
+    # def inquire_ddc_fpga_temperature(self):
+    #     '''Inquire the temperature of the DDC FPGA (IC4)'''
+    #     self.ddc_fpga_temperature = self.inquire(ALP_DDC_FPGA_TEMPERATURE)
+    #     return self.ddc_fpga_temperature
+
+    # # TODO ALP 4.2 only...
+    # def inquire_apps_fpga_temperature(self):
+    #     '''Inquire the temperature of the Applications FPGA (IC3)'''
+    #     self.apps_fpga_temperature = self.inquire(ALP_APPS_FPGA_TEMPERATURE)
+    #     return self.apps_fpga_temperature
+
+    # # TODO ALP 4.2 only...
+    # def inquire_pcb_temperature(self):
+    #     '''Inquire the temperature of the sensor IC (IC22)'''
+    #     self.pcb_temperature = self.inquire(ALP_PCB_TEMPERATURE)
+    #     return self.pcb_temperature
+
+    def inquire_pwm_level(self):
+        '''Inquire PWM level (i.e. duty-cycle in percent)'''
+        self.pwm_level = self.inquire(ALP_PWM_LEVEL)
+        return self.pwm_level
+
+    def inquire_settings(self):
+        settings = {
+            'number': self.inquire_number(),
+            'version': self.inquire_version(),
+            'available memory': self.inquire_available_memory(),
+            'dmd type': self.inquire_dmd_type(),
+            'dmd mode': self.inquire_dmd_mode(),
+            'display height': self.inquire_display_height(),
+            'display width': self.inquire_display_width(),
+            'usb connection': self.inquire_usb_connection(),
+            'pwm level': self.inquire_pwm_level(),
+        }
+        return settings
 
     def display(self, protocol):
         '''Display protocol'''

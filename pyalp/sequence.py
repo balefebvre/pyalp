@@ -29,6 +29,134 @@ class Sequence(object):
         '''TODO add doc...'''
         return not(self.infinite_loop)
 
+    def inquire(self, device, inquire_type):
+        '''Inquire a parameter setting on the picture sequence'''
+        DeviceId = c_ulong(device.id)
+        SequenceId = c_ulong(self.id)
+        InquireType = c_ulong(inquire_type)
+        UserVar = c_ulong(ALP_DEFAULT)
+        UserVarPtr = byref(UserVar)
+        ret_val = api.AlpSeqInquire(DeviceId, SequenceId, InquireType, UserVarPtr)
+        if ret_val == ALP_OK:
+            return ret_val
+        else:
+            raise Exception("AlpSeqInquire: {}".format(ret_val))
+
+    def inquire_bit_planes(self, device):
+        '''Inquire the bit depth of the pictures in the sequence'''
+        self.bit_planes = self.inquire(device, ALP_BITPLANES)
+        return self.bit_planes
+
+    def inquire_bit_num(self, device):
+        '''Inquire the bit depth for display'''
+        self.bit_num = self.inquire(device, ALP_BITNUM)
+        return self.bit_num
+
+    def inquire_bin_mode(self, device):
+        '''Inquire the status of the binary mode for display'''
+        self.bin_mode = self.inquire(device, ALP_BIN_MODE)
+        return self.bin_mode
+
+    def inquire_pic_num(self, device):
+        '''Inquire the number of pictures in the equence'''
+        self.pic_num = self.inquire(device, ALP_PICNUM)
+        return self.pic_num
+
+    def inquire_first_frame(self, device):
+        '''Inquire the number of the first picture in the sequence selected for display'''
+        self.first_frame = self.inquire(device, ALP_FIRSTFRAME)
+        return self.first_frame
+
+    def inquire_last_frame(self, device):
+        '''Inquire the number of the last picture in the sequence selected for display'''
+        self.last_frame = self.inquire(device, ALP_LASTFRAME)
+        return self.last_frame
+
+    # TODO add inquiry for ALP_SCROLL_FROM_ROW, ALP_SCROLL_TO_ROW,
+    # ALP_FIRSTLINE, ALP_LASTLINE, ALP_LINE_INC
+
+    def inquire_sequence_repeat(self, device):
+        '''Inquire the number of automatically repeated displays of the sequence'''
+        self.sequence_repeat = self.inquire(device, ALP_SEQ_REPEAT)
+        return self.sequence_repeat
+
+    def inquire_picture_time(self, device):
+        '''Inquire the time between the start of consecutive pictures'''
+        self.picture_time = self.inquire(device, ALP_PICTURE_TIME)
+        return self.picture_time
+
+    def inquire_min_picture_time(self, device):
+        '''Inquire the minimum time between the start of consecutive pictures'''
+        self.min_picture_time = self.inquire(device, ALP_MIN_PICTURE_TIME)
+        return self.min_picture_time
+
+    def inquire_max_picture_time(self, device):
+        '''Inquire the maximum time between the start of consecutive pictures'''
+        self.max_picture_time = self.inquire(device, ALP_MAX_PICTURE_TIME)
+        return self.max_picture_time
+
+    def inquire_illuminate_time(self, device):
+        '''Inquire the duration of the display of one picture'''
+        self.illuminate_time = self.inquire(device, ALP_ILLUMINATE_TIME)
+        return self.illuminate_time
+
+    def inquire_min_illuminate_time(self, device):
+        '''Inquire the minimum duration of the display of one picture'''
+        self.min_illuminate_time = self.inquire(device, ALP_MIN_ILLUMINATE_TIME)
+        return self.min_illuminate_time
+
+    def inquire_on_time(self, device):
+        '''Inquire the total active projection time'''
+        self.on_time = self.inquire(device, ALP_ON_TIME)
+        return self.on_time
+
+    def inquire_off_time(self, device):
+        '''Inquire the total inactive projection time'''
+        self.off_time = self.inquire(device, ALP_OFF_TIME)
+        return self.off_time
+
+    # TODO add inquiry for ALP_SYNCH_DELAY, ALP_MAX_SYNCH_DELAY,
+    # ALP_SYNCH_PULSEWIDTH, ALP_TRIGGER_IN_DELAY, ALP_MAX_TRIGGER_IN_DELAY
+
+    def inquire_data_format(self, device):
+        '''Inquire the active image data format'''
+        self.data_format = self.inquire(device, ALP_DATA_FORMAT)
+        return self.data_format
+
+    def inquire_sequence_put_lock(self, device):
+        '''Inquire the status of the lock protecting sequence data against
+        writing during display'''
+        self.sequence_put_lock = self.inquire(device, ALP_SEQ_PUT_LOCK)
+        return self.sequence_put_lock
+
+    # TODO add inquiry for ALP_FLUT_MODE, ALP_FLUT_ENTRIES9, ALP_FLUT_OFFSET9
+
+    # TODO add inquiry for ALP_PWM_MODE
+
+    def inquire_settings(self, device):
+        settings = {
+            'bit planes': self.inquire_bit_planes(device),
+            'bit num': self.inquire_bit_num(device),
+            'bin mode': self.inquire_bin_mode(device),
+            'pic num': self.inquire_pic_num(device),
+            'first frame': self.inquire_first_frame(device),
+            'last frame': self.inquire_last_frame(device),
+            # TODO complete...
+            'sequence repeat': self.inquire_sequence_repeat(device),
+            'picture time': self.inquire_picture_time(device),
+            'min picture time': self.inquire_min_picture_time(device),
+            'max picture time': self.inquire_max_picture_time(device),
+            'illuminate time': self.inquire_illuminate_time(device),
+            'min illuminate time': self.inquire_min_illuminate_time(device),
+            'on time': self.inquire_on_time(device),
+            'off time': self.inquire_off_time(device),
+            # TODO complete...
+            'data format': self.inquire_data_format(device),
+            'sequence put lock': self.inquire_sequence_put_lock(device),
+            # TODO complete...
+        }
+        return settings
+
 
 class White(Sequence):
     '''TODO add doc...

@@ -1,3 +1,4 @@
+import pprint
 import time
 
 import pyalp as alp
@@ -32,9 +33,13 @@ class White(Protocol):
         device.allocate(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
-        # TODO manage timing
-        # device.timing(sequence)
+        # TODO check if timing management is correct...
+        device.timing(sequence)
         device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        if __debug__:
+            settings = sequence.inquire_settings(device)
+            print("White sequence's settings:")
+            pprint.pprint(settings)
         # Start sequence
         device.start(sequence, infinite_loop=self.infinite_loop)
         # Wait sequence end
@@ -63,9 +68,13 @@ class Black(Protocol):
         device.allocate(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
-        # TODO manage timing...
-        # device.timing(sequence)
+        # TODO check if timing management is correct...
+        device.timing(sequence)
         device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        if __debug__:
+            settings = sequence.inquire_settings(device)
+            print("Black sequence's settings:")
+            pprint.pprint(settings)
         # Start sequence
         device.start(sequence, infinite_loop=self.infinite_loop)
         # Wait sequence end
