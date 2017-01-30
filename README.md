@@ -26,5 +26,6 @@ Vialux.
 # Notes
 
 ## Conda environment
-
-  source activate alp
+```
+source activate alp
+```
