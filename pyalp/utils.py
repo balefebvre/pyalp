@@ -1,3 +1,4 @@
+import builtins
 import ctypes
 import numpy
 
@@ -53,3 +54,14 @@ def get_moving_bars_frames(dmd_width, dmd_height, dtype='uint8'):
     '''TODO add doc...'''
     # TODO generate boolean frames...
     return frames
+
+def input(prompt, callback):
+    '''TODO add doc string'''
+    ans = None
+    while ans is None:
+        try:
+            arg = builtins.input(prompt)
+            ans = callback(arg)
+        except:
+            print("  Input error, try again...")
+    return ans

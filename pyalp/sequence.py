@@ -314,13 +314,18 @@ class Checkerboard(Sequence):
         x_max = x_min + self.checkerboard_size
         y_min = (height - self.checkerboard_size) // 2
         y_max = y_min + self.checkerboard_size
-        # print("data: {}".format(data))
-        print("data.shape: {}".format(data.shape))
         frames[x_min:x_max, y_min:y_max, :] = numpy.kron(data, numpy.ones((self.check_size, self.check_size, 1)))
-        print("frames: {}".format(frames))
-        print("frames.shape: {}".format(frames))
+        # Transpose frames
+        frames = numpy.transpose(frames)
+        # TODO remove the following lines.
+        # print("frames: {}".format(frames))
+        print("frames.shape: {}".format(frames.shape))
         print("numpy.amin(frames): {}".format(numpy.amin(frames)))
         print("numpy.amax(frames): {}".format(numpy.amax(frames)))
+        import matplotlib.pyplot as plt
+        import os
+        plt.imshow(frames[:, :, 0])
+        plt.savefig(os.path.expanduser(os.path.join("~", "checkerboard.svg")))
         # Return frames
         return frames
 
