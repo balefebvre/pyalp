@@ -17,9 +17,9 @@ Vialux.
 - [ ] Generate moving bars sequence
 - [ ] Test the moving bars sequence (i.e. generation & display)
 - [x] Add inquiry mechanism for ALP device
-- [ ] Test inquiry mechanism for ALP device
+- [x] Test inquiry mechanism for ALP device
 - [x] Add inquiry mechanism for sequence on ALP device
-- [ ] Test inquiry mechanism for sequence on ALP device
+- [x] Test inquiry mechanism for sequence on ALP device
 
 
 
