@@ -392,6 +392,14 @@ class Device(object):
             raise Exception("AlpProjControl: {}".format(ret_val))
 
     def inquire_projection(self, inquire_type):
+        '''Inquire information about general ALP setting for the sequence display.
+
+        Parameters
+        ----------
+        inquire_type: str
+            If equal to 'progress' then retrieve information about active sequences and the sequence queue.
+
+        '''
         if inquire_type is 'progress':
             DeviceId = c_ulong(self.id)
             InquireType = c_long(ALP_PROJ_PROGRESS)
