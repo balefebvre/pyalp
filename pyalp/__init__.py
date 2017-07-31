@@ -11,7 +11,7 @@ api = load_api(path)
 
 
 
-from . import device, sequence, protocol
+from . import device, io, sequence, stimulus, protocol
 
 
 
@@ -19,6 +19,8 @@ __all__ = [
     'path',
     'api',
     'device',
+    'io',
     'sequence',
+    'stimulus',
     'protocol',
 ]

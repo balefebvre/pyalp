@@ -1,17 +1,16 @@
-import ctypes
-from ctypes import c_long, c_ulong, byref, cast
+# import ctypes
+from ctypes import c_ulong, byref
 import numpy
 
 from pyalp import *
 from .base.constant import *
 
 
-
 class Sequence(object):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, bit_planes, pic_num, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
         # Save input parameters
         self.bit_planes = bit_planes
@@ -27,11 +26,11 @@ class Sequence(object):
         self.sequence_id = ALP_DEFAULT
 
     def is_finite(self):
-        '''TODO add doc...'''
+        """TODO add doc..."""
         return not(self.infinite_loop)
 
     def inquire(self, device, inquire_type):
-        '''Inquire a parameter setting on the picture sequence'''
+        """Inquire a parameter setting on the picture sequence"""
         DeviceId = c_ulong(device.id)
         SequenceId = c_ulong(self.id)
         InquireType = c_ulong(inquire_type)
@@ -45,32 +44,32 @@ class Sequence(object):
             raise Exception("AlpSeqInquire: {}".format(ret_val))
 
     def inquire_bit_planes(self, device):
-        '''Inquire the bit depth of the pictures in the sequence'''
+        """Inquire the bit depth of the pictures in the sequence"""
         self.bit_planes = self.inquire(device, ALP_BITPLANES)
         return self.bit_planes
 
     def inquire_bit_num(self, device):
-        '''Inquire the bit depth for display'''
+        """Inquire the bit depth for display"""
         self.bit_num = self.inquire(device, ALP_BITNUM)
         return self.bit_num
 
     def inquire_bin_mode(self, device):
-        '''Inquire the status of the binary mode for display'''
+        """Inquire the status of the binary mode for display"""
         self.bin_mode = self.inquire(device, ALP_BIN_MODE)
         return self.bin_mode
 
     def inquire_pic_num(self, device):
-        '''Inquire the number of pictures in the equence'''
+        """Inquire the number of pictures in the equence"""
         self.pic_num = self.inquire(device, ALP_PICNUM)
         return self.pic_num
 
     def inquire_first_frame(self, device):
-        '''Inquire the number of the first picture in the sequence selected for display'''
+        """Inquire the number of the first picture in the sequence selected for display"""
         self.first_frame = self.inquire(device, ALP_FIRSTFRAME)
         return self.first_frame
 
     def inquire_last_frame(self, device):
-        '''Inquire the number of the last picture in the sequence selected for display'''
+        """Inquire the number of the last picture in the sequence selected for display"""
         self.last_frame = self.inquire(device, ALP_LASTFRAME)
         return self.last_frame
 
@@ -78,42 +77,42 @@ class Sequence(object):
     # ALP_FIRSTLINE, ALP_LASTLINE, ALP_LINE_INC
 
     def inquire_sequence_repeat(self, device):
-        '''Inquire the number of automatically repeated displays of the sequence'''
+        """Inquire the number of automatically repeated displays of the sequence"""
         self.sequence_repeat = self.inquire(device, ALP_SEQ_REPEAT)
         return self.sequence_repeat
 
     def inquire_picture_time(self, device):
-        '''Inquire the time between the start of consecutive pictures'''
+        """Inquire the time between the start of consecutive pictures"""
         self.picture_time = self.inquire(device, ALP_PICTURE_TIME)
         return self.picture_time
 
     def inquire_min_picture_time(self, device):
-        '''Inquire the minimum time between the start of consecutive pictures'''
+        """Inquire the minimum time between the start of consecutive pictures"""
         self.min_picture_time = self.inquire(device, ALP_MIN_PICTURE_TIME)
         return self.min_picture_time
 
     def inquire_max_picture_time(self, device):
-        '''Inquire the maximum time between the start of consecutive pictures'''
+        """Inquire the maximum time between the start of consecutive pictures"""
         self.max_picture_time = self.inquire(device, ALP_MAX_PICTURE_TIME)
         return self.max_picture_time
 
     def inquire_illuminate_time(self, device):
-        '''Inquire the duration of the display of one picture'''
+        """Inquire the duration of the display of one picture"""
         self.illuminate_time = self.inquire(device, ALP_ILLUMINATE_TIME)
         return self.illuminate_time
 
     def inquire_min_illuminate_time(self, device):
-        '''Inquire the minimum duration of the display of one picture'''
+        """Inquire the minimum duration of the display of one picture"""
         self.min_illuminate_time = self.inquire(device, ALP_MIN_ILLUMINATE_TIME)
         return self.min_illuminate_time
 
     def inquire_on_time(self, device):
-        '''Inquire the total active projection time'''
+        """Inquire the total active projection time"""
         self.on_time = self.inquire(device, ALP_ON_TIME)
         return self.on_time
 
     def inquire_off_time(self, device):
-        '''Inquire the total inactive projection time'''
+        """Inquire the total inactive projection time"""
         self.off_time = self.inquire(device, ALP_OFF_TIME)
         return self.off_time
 
@@ -121,13 +120,13 @@ class Sequence(object):
     # ALP_SYNCH_PULSEWIDTH, ALP_TRIGGER_IN_DELAY, ALP_MAX_TRIGGER_IN_DELAY
 
     def inquire_data_format(self, device):
-        '''Inquire the active image data format'''
+        """Inquire the active image data format"""
         self.data_format = self.inquire(device, ALP_DATA_FORMAT)
         return self.data_format
 
     def inquire_sequence_put_lock(self, device):
-        '''Inquire the status of the lock protecting sequence data against
-        writing during display'''
+        """Inquire the status of the lock protecting sequence data against
+        writing during display"""
         self.sequence_put_lock = self.inquire(device, ALP_SEQ_PUT_LOCK)
         return self.sequence_put_lock
 
@@ -161,16 +160,16 @@ class Sequence(object):
 
 
 class White(Sequence):
-    '''TODO add doc...
+    """TODO add doc...
 
-    TODO complete...'''
+    TODO complete..."""
     def __init__(self):
         bit_planes = 1 # bit depth of the pictures
         pic_num = 1 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
 
     def get_user_array(self, device):
-        '''Get user array'''
+        """Get user array"""
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
@@ -181,17 +180,17 @@ class White(Sequence):
 
 
 class Black(Sequence):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self):
         bit_planes = 1 # bit depth of the pictures
         pic_num = 1 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
 
     def get_user_array(self, device):
-        '''Get user array'''
+        """Get user array"""
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
@@ -202,17 +201,42 @@ class Black(Sequence):
 
 
 class BlackWhite(Sequence):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, infinite_loop=False):
         bit_planes = 1 # bit depth of the pictures
         pic_num = 2 # number of pictures
         Sequence.__init__(self, bit_planes, pic_num)
 
     def get_user_array(self, device):
-        '''Get frames'''
+        """Get frames"""
+        dtype = 'uint8'
+        width, height = device.get_resolution()
+        size = width * height
+        min_ = numpy.iinfo(dtype).min
+        max_ = numpy.iinfo(dtype).max
+        dtype = numpy.iinfo(dtype).dtype
+        frames = numpy.kron(numpy.array([min_, max_], dtype=dtype), numpy.ones(size, dtype=dtype))
+        return frames
+
+
+class Binary(Sequence):
+    """TODO add docstring.
+
+    TODO complete.
+
+    """
+
+    def __init__(self, picture_time):
+        bit_planes = 1  # bit depth of the pictures
+        pic_num = 2  # number of pictures
+        Sequence.__init__(self, bit_planes, pic_num)
+        self.picture_time = picture_time
+
+    def get_user_array(self, device):
+        """TODO add docstring."""
         dtype = 'uint8'
         width, height = device.get_resolution()
         size = width * height
@@ -224,10 +248,10 @@ class BlackWhite(Sequence):
 
 
 class FullField(Sequence):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, footprint_array):
         bit_planes = 8
         pic_num = footprint_array.shape[0]
@@ -244,10 +268,10 @@ class FullField(Sequence):
 
 # TODO delete...
 # class Sequence(object):
-#     '''TODO add doc...
+#     """TODO add doc...
 #
 #     TODO complete...
-#     '''
+#     """
 #     def __init__(self, bit_planes=None, pic_num=None,
 #                  illuminate_time=ALP_DEFAULT, picture_time=ALP_DEFAULT,
 #                  synch_delay=ALP_DEFAULT, synch_pulse_width=ALP_DEFAULT,
@@ -267,10 +291,10 @@ class FullField(Sequence):
 #         self.pic_load = pic_load # TODO check if it should be defined somewhere else...
 
 class Checkerboard(Sequence):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, check_size=30, n_checks=10, rate=50.0, n_repetitions=None, seed=None):
         # Save input parameters
         self.check_size = check_size # px
@@ -296,7 +320,7 @@ class Checkerboard(Sequence):
         # self.pic_load = ALP_DEFAULT
 
     def get_user_array(self, device):
-        '''TODO add doc...'''
+        """TODO add doc..."""
         # Allocate frame
         width, height = device.get_resolution()
         shape = (width, height, self.pic_num)

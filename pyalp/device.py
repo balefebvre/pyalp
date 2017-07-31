@@ -1,163 +1,163 @@
 import ctypes
-from ctypes import c_long, c_ulong, byref, cast
+from ctypes import c_long, byref, cast
 
 from . import api
 from . import utils
 from .base.constant import *
 from .base.type import *
 from .protocol import Protocol
-from .sequence import Sequence
-
+# from .sequence import Sequence
+from .stimulus import Stimulus
 
 
 def allocate(device_number=ALP_DEFAULT):
-    '''Allocate an ALP hardware system (board set)'''
+    """Allocate an ALP hardware system (board set)"""
     device = Device(device_number)
     return device
 
 
 class Device(object):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
+
     def __init__(self, device_number):
-        '''Allocate an ALP hardware system (board set)'''
+        """Allocate an ALP hardware system (board set)"""
         # Save input parameter
         self.nb = device_number
         # Allocate device
-        DeviceNumber = c_long(device_number)
-        InitFlag = c_long(ALP_DEFAULT)
-        DeviceId = c_ulong(ALP_DEFAULT)
-        DeviceIdPtr = byref(DeviceId)
-        ret_val = api.AlpDevAlloc(DeviceNumber, InitFlag, DeviceIdPtr)
-        if ret_val == ALP_OK:
-            self.id = DeviceId.value
+        device_number_ = c_long(device_number)
+        init_flag_ = c_long(ALP_DEFAULT)
+        device_id_ = c_ulong(ALP_DEFAULT)
+        device_id_ptr_ = byref(device_id_)
+        ret_val_ = api.AlpDevAlloc(device_number_, init_flag_, device_id_ptr_)
+        if ret_val_ == ALP_OK:
+            self.id = device_id_.value
         else:
-            raise Exception("AlpDevAlloc: {}".format(ret_val))
+            raise Exception("AlpDevAlloc: {}".format(ret_val_))
 
     def __del__(self):
-        '''Deallocate the ALP hardware system (board set)'''
-        DeviceId = c_ulong(self.id)
-        ret_val = api.AlpDevFree(DeviceId)
-        if ret_val == ALP_OK:
+        """Deallocate the ALP hardware system (board set)"""
+        device_id_ = c_ulong(self.id)
+        ret_val_ = api.AlpDevFree(device_id_)
+        if ret_val_ == ALP_OK:
             return
         else:
-            raise Exception("AlpDevFree: {}".format(ret_val))
+            raise Exception("AlpDevFree: {}".format(ret_val_))
 
     def get_id(self):
-        '''Get DMD identifier'''
+        """Get DMD identifier"""
         # Return DMD identifier
         return self.id
 
     def inquire(self, inquire_type):
-        '''Inquire a parameter setting og the ALP device'''
-        DeviceId = c_ulong(self.id)
-        InquireType = c_ulong(inquire_type)
-        UserVar = c_ulong(ALP_DEFAULT)
-        UserVarPtr = byref(UserVar)
-        ret_val = api.AlpDevInquire(DeviceId, InquireType, UserVarPtr)
-        if ret_val == ALP_OK:
-            ret_val = UserVar.value
-            return ret_val
+        """Inquire a parameter setting og the ALP device"""
+        device_id_ = c_ulong(self.id)
+        inquire_type_ = c_ulong(inquire_type)
+        user_var_ = c_ulong(ALP_DEFAULT)
+        user_var_ptr_ = byref(user_var_)
+        ret_val_ = api.AlpDevInquire(device_id_, inquire_type_, user_var_ptr_)
+        if ret_val_ == ALP_OK:
+            ret_val_ = user_var_.value
+            return ret_val_
         else:
-            raise Exception("AlpDevInquire: {}".format(ret_val))
+            raise Exception("AlpDevInquire: {}".format(ret_val_))
 
     def inquire_dmd_type(self):
-        '''Inquire DMD type'''
-        self.dmd_type = self.inquire(ALP_DEV_DMDTYPE)
-        return self.dmd_type
+        """Inquire DMD type"""
+        dmd_type = self.inquire(ALP_DEV_DMDTYPE)
+        return dmd_type
 
     def get_resolution(self):
-        '''Get DMD resolution (in pixels)'''
+        """Get DMD resolution (in pixels)"""
         # Inquire DMD type
         dmd_type = self.inquire_dmd_type()
         # Retrieve DMD width and height
         # TODO clean following commented lines...
-        if dmd_type in [ALP_DMDTYPE_XGA, ALP_DMDTYPE_XGA_055X, ALP_DMDTYPE_XGA_07A]:
         # if dmd_type in [ALP_DMDTYPE_XGA, ALP_DMDTYPE_XGA_055A, ALP_DMDTYPE_XGA_055X, ALP_DMDTYPE_XGA_07A]:
-            width = 1024 # px
-            height = 768 # px
+        if dmd_type in [ALP_DMDTYPE_XGA, ALP_DMDTYPE_XGA_055X, ALP_DMDTYPE_XGA_07A]:
+            width = 1024  # px
+            height = 768  # px
         # TODO clean following commented lines...
         # elif dmd_type in [ALP_DMDTYPE_SXGA_PLUS]:
-        #     width = 1400 # px
-        #     height = 1050 # px
+        #     width = 1400  # px
+        #     height = 1050  # px
         elif dmd_type in [ALP_DMDTYPE_DISCONNECT, ALP_DMDTYPE_1080P_095A]:
-            width = 1920 # px
-            height = 1080 # px
+            width = 1920  # px
+            height = 1080  # px
         elif dmd_type in [ALP_DMDTYPE_WUXGA_096A]:
-            width = 1920 # px
-            height = 1200 # px
+            width = 1920  # px
+            height = 1200  # px
         # TODO clean following commented lines...
         # elif dmd_type in [ALP_DMDTYPE_WQXGA_400MHZ_090A, ALP_DMDTYPE_WQXGA_480MHZ_090A]:
         #     width = 2560 # px
         #     height = 1600 # px
         else:
-            raise ValueError("Unknown DMD type {}!".format(self.dmd_type))
+            dmd_type = self.inquire_dmd_type()
+            raise ValueError("Unknown DMD type {}!".format(dmd_type))
         # Save parameters
-        self.width = width
-        self.height = height
-        self.resolution = self.width, self.height
+        resolution = width, height
         # Return DMD resolution
-        return self.resolution
+        return resolution
 
     def inquire_number(self):
-        '''Inquire serial number of the ALP device'''
-        self.number = self.inquire(ALP_DEVICE_NUMBER)
-        return self.number
+        """Inquire serial number of the ALP device"""
+        number = self.inquire(ALP_DEVICE_NUMBER)
+        return number
 
     def inquire_version(self):
-        '''Inquire version number of the ALP device'''
-        self.version = self.inquire(ALP_VERSION)
-        return self.version
+        """Inquire version number of the ALP device"""
+        version = self.inquire(ALP_VERSION)
+        return version
 
     def inquire_available_memory(self):
-        '''Inquire available memory of the ALP device'''
-        self.available_memory = self.inquire(ALP_AVAIL_MEMORY)
-        return self.available_memory
+        """Inquire available memory of the ALP device"""
+        available_memory = self.inquire(ALP_AVAIL_MEMORY)
+        return available_memory
 
     def inquire_dmd_mode(self):
-        '''Inquire DMD mode of the ALP device'''
-        self.dmd_mode = self.inquire(ALP_DEV_DMD_MODE)
-        return self.dmd_mode
+        """Inquire DMD mode of the ALP device"""
+        dmd_mode = self.inquire(ALP_DEV_DMD_MODE)
+        return dmd_mode
 
     def inquire_display_height(self):
-        '''Inquire number of mirror rows on the DMD'''
-        self.display_height = self.inquire(ALP_DEV_DISPLAY_HEIGHT)
-        return self.display_height
+        """Inquire number of mirror rows on the DMD"""
+        display_height = self.inquire(ALP_DEV_DISPLAY_HEIGHT)
+        return display_height
 
     def inquire_display_width(self):
-        '''Inquire number of mirror columns on the DMD'''
-        self.display_width = self.inquire(ALP_DEV_DISPLAY_WIDTH)
-        return self.display_width
+        """Inquire number of mirror columns on the DMD"""
+        display_width = self.inquire(ALP_DEV_DISPLAY_WIDTH)
+        return display_width
 
     def inquire_usb_connection(self):
-        '''Inquire the status of the USB connection'''
-        self.usb_connection = self.inquire(ALP_USB_CONNECTION)
-        return self.usb_connection
+        """Inquire the status of the USB connection"""
+        usb_connection = self.inquire(ALP_USB_CONNECTION)
+        return usb_connection
 
     # # TODO ALP 4.2 only...
     # def inquire_ddc_fpga_temperature(self):
-    #     '''Inquire the temperature of the DDC FPGA (IC4)'''
+    #     """Inquire the temperature of the DDC FPGA (IC4)"""
     #     self.ddc_fpga_temperature = self.inquire(ALP_DDC_FPGA_TEMPERATURE)
     #     return self.ddc_fpga_temperature
 
     # # TODO ALP 4.2 only...
     # def inquire_apps_fpga_temperature(self):
-    #     '''Inquire the temperature of the Applications FPGA (IC3)'''
+    #     """Inquire the temperature of the Applications FPGA (IC3)"""
     #     self.apps_fpga_temperature = self.inquire(ALP_APPS_FPGA_TEMPERATURE)
     #     return self.apps_fpga_temperature
 
     # # TODO ALP 4.2 only...
     # def inquire_pcb_temperature(self):
-    #     '''Inquire the temperature of the sensor IC (IC22)'''
+    #     """Inquire the temperature of the sensor IC (IC22)"""
     #     self.pcb_temperature = self.inquire(ALP_PCB_TEMPERATURE)
     #     return self.pcb_temperature
 
     def inquire_pwm_level(self):
-        '''Inquire PWM level (i.e. duty-cycle in percent)'''
-        self.pwm_level = self.inquire(ALP_PWM_LEVEL)
-        return self.pwm_level
+        """Inquire PWM level (i.e. duty-cycle in percent)"""
+        pwm_level = self.inquire(ALP_PWM_LEVEL)
+        return pwm_level
 
     def inquire_settings(self):
         settings = {
@@ -173,42 +173,45 @@ class Device(object):
         }
         return settings
 
-    def display(self, protocol):
-        '''Display protocol'''
-        if isinstance(protocol, list): # TODO create a Queue class...
-            queue = protocol
+    def display(self, element):
+        """Display element"""
+        if isinstance(element, list):  # TODO create a Queue class...
+            queue = element
             for sequence in queue:
                 sequence.display(self)
                 if sequence.is_finite():
                     self.wait_completion()
                 else:
-                    self.wait_interuption()
-        elif isinstance(protocol, Protocol):
-            protocol.project(self)
-        elif isinstance(protocol, Sequence):
-            sequence = protocol
-            sequence.display(self)
-            self.wait()
+                    self.wait_interruption()
+        elif isinstance(element, Protocol):
+            element.project(self)
+        # elif isinstance(element, Sequence):
+        #     sequence = element
+        #     sequence.display(self)
+        #     self.wait()
+        elif isinstance(element, Stimulus):
+            element.display(self)
+            # self.wait()
         else:
             raise NotImplementedError("pyalp.device.display")
         return
 
     def allocate(self, sequence):
-        '''Allocate sequence'''
-        DeviceId = c_ulong(self.id)
-        BitPlanes = c_long(sequence.bit_planes)
-        PicNum = c_long(sequence.pic_num)
-        SequenceId = c_ulong(ALP_DEFAULT)
-        SequenceIdPtr = byref(SequenceId)
-        ret_val = api.AlpSeqAlloc(DeviceId, BitPlanes, PicNum, SequenceIdPtr)
-        if ret_val == ALP_OK:
-            sequence.id = SequenceId.value
+        """Allocate sequence"""
+        device_id_ = c_ulong(self.id)
+        bit_planes_ = c_long(sequence.bit_planes)
+        pic_num_ = c_long(sequence.pic_num)
+        sequence_id_ = c_ulong(ALP_DEFAULT)
+        sequence_id_ptr_ = byref(sequence_id_)
+        ret_val_ = api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, sequence_id_ptr_)
+        if ret_val_ == ALP_OK:
+            sequence.id = sequence_id_.value
             return
         else:
-            raise Exception("AlpSeqAlloc: {}".format(ret_val))
+            raise Exception("AlpSeqAlloc: {}".format(ret_val_))
 
     # def control(self, sequence):
-    #     '''Control sequence'''
+    #     """Control sequence"""
     #     DeviceId = c_ulong(self.id)
     #     SequenceId = c_ulong(sequence.id)
     #     if sequence.n_repetitions is None:
@@ -225,118 +228,143 @@ class Device(object):
     #     return
 
     def control(self, sequence, control_type, control_value):
-        '''Control sequence'''
-        DeviceId = c_ulong(self.id)
-        SequenceId = c_ulong(sequence.id)
-        ControlType = c_long(control_type)
-        ControlValue = c_long(control_value)
-        ret_val = api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
-        if ret_val == ALP_OK:
+        """Control sequence"""
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        control_type_ = c_long(control_type)
+        control_value_ = c_long(control_value)
+        ret_val_ = api.AlpSeqControl(device_id_, sequence_id_, control_type_, control_value_)
+        if ret_val_ == ALP_OK:
             return
         else:
-            raise Exception("AlpSeqControl: {}".format(ret_val))
+            raise Exception("AlpSeqControl: {}".format(ret_val_))
 
     def control_repetitions(self, sequence, nb_repetitions):
-        '''Control sequence repetitions'''
+        """Control sequence repetitions"""
         self.control(sequence, ALP_SEQ_REPEAT, nb_repetitions)
         return
 
-    def timing(self, sequence):
-        '''Set sequence timing'''
-        # TODO avoid set timing if possible (i.e. only default values)...
-        DeviceId = c_ulong(self.id)
-        SequenceId = c_ulong(sequence.id)
-        IlluminateTime = c_long(sequence.illuminate_time)
-        PictureTime = c_long(sequence.picture_time)
-        SynchDelay = c_long(sequence.synch_delay)
-        SynchPulseWidth = c_long(sequence.synch_pulse_width)
-        TriggerInDelay = c_long(sequence.trigger_in_delay)
-        ret_val = api.AlpSeqTiming(DeviceId, SequenceId, IlluminateTime, PictureTime, SynchDelay, SynchPulseWidth, TriggerInDelay)
-        if ret_val == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqTiming: {}".format(ret_val))
-
-    def put(self, sequence): #sequence_id, user_array, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
-        '''Put sequence'''
-        DeviceId = c_ulong(self.id)
-        SequenceId = c_ulong(sequence.id)
-        PicOffset = c_ulong(sequence.pic_offset)
-        PicLoad = c_ulong(sequence.pic_load)
-        UserArray = utils.numpy_to_ctypes(sequence.get_user_array(self))
-        UserArrayPtr = cast(UserArray, ctypes.c_void_p)
-        ret_val = api.AlpSeqPut(DeviceId, SequenceId, PicOffset, PicLoad, UserArrayPtr)
-        if ret_val == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqPut: {}".format(ret_val))
-
-    def start(self, sequence, infinite_loop=False):
-        '''Start sequence'''
-        DeviceId = c_ulong(self.id)
-        SequenceId = c_ulong(sequence.id)
-        if infinite_loop:
-            # Launch sequence with an infinite number of loops
-            ret_val = api.AlpProjStartCont(DeviceId, SequenceId)
-            if ret_val == ALP_OK:
-                return
-            else:
-                raise Exception("AlpProjStartCont: {}".format(ret_val))
-        else:
-            # Launch sequence with a finite number of loops
-            ret_val = api.AlpProjStart(DeviceId, SequenceId)
-            if ret_val == ALP_OK:
-                return
-            else:
-                raise Exception("AlpProjStart: {}".format(ret_val))
-
-    def free(self, sequence):
-        '''Free sequence'''
-        DeviceId = c_ulong(self.id)
-        SequenceId = c_ulong(sequence.id)
-        ret_val = api.AlpSeqFree(DeviceId, SequenceId)
-        if ret_val == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqFree: {}".format(ret_val))
-
-    def wait(self, infinite_loop=False):
-        '''Wait sequence completion'''
-        DeviceId = c_ulong(self.id)
-        if infinite_loop:
-            _ = input("Press Enter to stop projection...\n")
-            DeviceId = c_ulong(self.id)
-            ret_val = api.AlpProjHalt(DeviceId)
-            if ret_val == ALP_OK:
-                return
-            else:
-                raise Exception("AlpProjHalt: {}".format(ret_val))
-        else:
-            ret_val = api.AlpProjWait(DeviceId)
-            if ret_val == ALP_OK:
-                return
-            else:
-                raise Exception("AlpProjWait: {}".format(ret_val))
-
-    def wait_interruption(self):
-        '''Wait sequence interruption'''
-        _ = input("Press Enter to stop projection...\n")
-        DeviceId = c_ulong(self.id)
-        ret_val = api.AlpProjHalt(DeviceId)
-        if ret_val == ALP_OK:
-            return
-        else:
-            raise Exception("AlpProjHalt: {}".format(ret_val))
-
-    def invert_projection(self):
-        DeviceId = c_ulong(self.id)
-        ControlType = c_long(ALP_PROJ_INVERSION)
-        ControlValue = c_long(not(ALP_DEFAULT)) # TODO check if correct...
-        ret_val = api.AlpProjControl()
+    def control_bit_number(self, sequence, bit_number):
+        """Control sequence bit number"""
+        self.control(sequence, ALP_BITNUM, bit_number)
         return
 
-    def control_projection(self, mode=None, inversion=None, upside_down=None, wait_until=None, step=None, queue_mode=None, abort_sequence=None, abort_frame=None, reset_queue=None):
-        '''TODO add doc...'''
+    def control_binary_mode(self, sequence, binary_mode):
+        """Control sequence binary mode"""
+        if binary_mode is 'normal':
+            self.control(sequence, ALP_BIN_MODE, ALP_BIN_NORMAL)
+        elif binary_mode is 'uninterrupted':
+            self.control(sequence, ALP_BIN_MODE, ALP_BIN_UNINTERRUPTED)
+        else:
+            raise NotImplementedError()
+
+    def timing(self, sequence):
+        """Set sequence timing"""
+        # TODO avoid set timing if possible (i.e. only default values)...
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        illuminate_time_ = c_long(sequence.illuminate_time)
+        picture_time_ = c_long(sequence.picture_time)
+        synch_delay_ = c_long(sequence.synch_delay)
+        synch_pulse_width_ = c_long(sequence.synch_pulse_width)
+        trigger_in_delay_ = c_long(sequence.trigger_in_delay)
+        ret_val_ = api.AlpSeqTiming(device_id_, sequence_id_, illuminate_time_, picture_time_,
+                                    synch_delay_, synch_pulse_width_, trigger_in_delay_)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpSeqTiming: {}".format(ret_val_))
+
+    def put(self, sequence):  # sequence_id, user_array, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
+        """Put sequence"""
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        pic_offset_ = c_ulong(sequence.pic_offset)
+        pic_load_ = c_ulong(sequence.pic_load)
+        user_array_ = utils.numpy_to_ctypes(sequence.get_user_array(self))
+        user_array_ptr_ = cast(user_array_, ctypes.c_void_p)
+        ret_val_ = api.AlpSeqPut(device_id_, sequence_id_, pic_offset_, pic_load_, user_array_ptr_)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpSeqPut: {}".format(ret_val_))
+
+    def start(self, sequence, infinite_loop=False):
+        """Start sequence"""
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        if infinite_loop:
+            # Launch sequence with an infinite number of loops
+            ret_val_ = api.AlpProjStartCont(device_id_, sequence_id_)
+            if ret_val_ == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjStartCont: {}".format(ret_val_))
+        else:
+            # Launch sequence with a finite number of loops
+            ret_val_ = api.AlpProjStart(device_id_, sequence_id_)
+            if ret_val_ == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjStart: {}".format(ret_val_))
+
+    def free(self, sequence):
+        """Free sequence"""
+        device_id_ = c_ulong(self.id)
+        sequence_id = c_ulong(sequence.id)
+        ret_val_ = api.AlpSeqFree(device_id_, sequence_id)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpSeqFree: {}".format(ret_val_))
+
+    def wait(self, infinite_loop=False):
+        """Wait sequence completion"""
+        device_id_ = c_ulong(self.id)
+        if infinite_loop:
+            _ = input("Press Enter to stop projection...\n")
+            device_id_ = c_ulong(self.id)
+            ret_val_ = api.AlpProjHalt(device_id_)
+            if ret_val_ == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjHalt: {}".format(ret_val_))
+        else:
+            ret_val_ = api.AlpProjWait(device_id_)
+            if ret_val_ == ALP_OK:
+                return
+            else:
+                raise Exception("AlpProjWait: {}".format(ret_val_))
+
+    def wait_completion(self):
+        """TODO add docstring."""
+
+        raise NotImplementedError()
+
+    def wait_interruption(self):
+        """Wait sequence interruption"""
+        _ = input("Press Enter to stop projection...\n")
+        device_id_ = c_ulong(self.id)
+        ret_val_ = api.AlpProjHalt(device_id_)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpProjHalt: {}".format(ret_val_))
+
+    @staticmethod
+    def invert_projection():
+        # DeviceId = c_ulong(self.id)
+        # ControlType = c_long(ALP_PROJ_INVERSION)
+        # ControlValue = c_long(not(ALP_DEFAULT))  # TODO check if correct...
+        ret_val_ = api.AlpProjControl()
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpProjControl: {}".format(ret_val_))
+
+    def control_projection(self, mode=None, inversion=None, upside_down=None, wait_until=None, step=None,
+                           queue_mode=None, abort_sequence=None, abort_frame=None, reset_queue=None):
+        """TODO add doc..."""
         # TODO mode...
         # Inversion
         if inversion is None:
@@ -344,7 +372,7 @@ class Device(object):
         elif inversion is False:
             self._control_projection(ALP_PROJ_INVERSION, ALP_DEFAULT)
         elif inversion is True:
-            self._control_projection(ALP_PROJ_INVERSION, not(ALP_DEFAULT))
+            self._control_projection(ALP_PROJ_INVERSION, not ALP_DEFAULT)
         else:
             raise ValueError("Unknown mode value {}, should be true or false".format(mode))
         # Upside down
@@ -353,11 +381,19 @@ class Device(object):
         elif upside_down is False:
             self._control_projection(ALP_PROJ_UPSIDE_DOWN, ALP_DEFAULT)
         elif upside_down is True:
-            self._control_projection(ALP_PROJ_UPSIDE_DOWN, not(ALP_DEFAULT))
+            self._control_projection(ALP_PROJ_UPSIDE_DOWN, not ALP_DEFAULT)
         else:
             raise ValueError("Unknown upside_down value {}, should be true or false".format(upside_down))
-        # TODO wait until...
-        # TODO step...
+        if wait_until is None:
+            pass
+        else:
+            raise NotImplementedError()
+            # TODO complete.
+        if step is None:
+            pass
+        else:
+            raise NotImplementedError()
+            # TODO complete.
         # Queue mode
         if queue_mode is None:
             pass
@@ -367,54 +403,57 @@ class Device(object):
             self._control_projection(ALP_PROJ_QUEUE_MODE, ALP_PROJ_SEQUENCE_QUEUE)
         else:
             raise ValueError("Unknown queue_mode value {}, should be true or false".format(queue_mode))
-        # TODO abort sequence...
-        # TODO abort frame...
+        if abort_sequence is None:
+            pass
+        else:
+            raise NotImplementedError()
+            # TODO complete.
+        if abort_frame is None:
+            pass
+        else:
+            raise NotImplementedError()
+            # TODO complete.
         # Reset queue
         if reset_queue is None:
             pass
         elif reset_queue is True:
             self._control_projection(ALP_PROJ_RESET_QUEUE, ALP_DEFAULT)
         elif reset_queue is True:
-            self._control_projection(ALP_PROJ_RESET_QUEUE, not(ALP_DEFAULT)) # TODO check if correct...
+            self._control_projection(ALP_PROJ_RESET_QUEUE, not ALP_DEFAULT)  # TODO check if correct...
         else:
             raise ValueError("Unknown reset_queue value {}, should be true or false".format(reset_queue))
         return
 
     def _control_projection(self, control_type, control_value):
-        '''TODO add doc...'''
-        DeviceId = c_ulong(self.id)
-        ControlType = c_long(control_type)
-        ControlValue = c_long(control_value)
-        ret_val = api.AlpProjControl(DeviceId, ControlType, ControlValue)
-        if ret_val == ALP_OK:
+        """TODO add doc..."""
+        device_id_ = c_ulong(self.id)
+        control_type_ = c_long(control_type)
+        control_value_ = c_long(control_value)
+        ret_val_ = api.AlpProjControl(device_id_, control_type_, control_value_)
+        if ret_val_ == ALP_OK:
             return
         else:
-            raise Exception("AlpProjControl: {}".format(ret_val))
+            raise Exception("AlpProjControl: {}".format(ret_val_))
 
     def inquire_projection(self, inquire_type):
-        '''Inquire information about general ALP setting for the sequence display.
+        """Inquire information about general ALP setting for the sequence display.
 
         Parameters
         ----------
         inquire_type: str
             If equal to 'progress' then retrieve information about active sequences and the sequence queue.
 
-        '''
+        """
         if inquire_type is 'progress':
-            DeviceId = c_ulong(self.id)
-            InquireType = c_long(ALP_PROJ_PROGRESS)
-            UserStruct = tAlpProjProgress()
-            UserStructPtr = byref(UserStruct)
-            ret_val = api.AlpProjInquireEx(DeviceId, InquireType, UserStructPtr)
-            if ret_val == ALP_OK:
-                # TODO clean...
-                # print("#####")
-                # print("UserSruct: {}".format(UserStruct))
-                # print("dir(UserSruct): {}".format(dir(UserStruct)))
-                # inquire_value = UserStruct.value
-                inquire_value = UserStruct
+            device_id_ = c_ulong(self.id)
+            inquire_type_ = c_long(ALP_PROJ_PROGRESS)
+            user_struct_ = tAlpProjProgress()
+            user_struct_ptr_ = byref(user_struct_)
+            ret_val_ = api.AlpProjInquireEx(device_id_, inquire_type_, user_struct_ptr_)
+            if ret_val_ == ALP_OK:
+                inquire_value = user_struct_
                 return inquire_value
             else:
-                raise Exception("AlpProjInquireEx: {}".format(ret_val))
+                raise Exception("AlpProjInquireEx: {}".format(ret_val_))
         else:
             raise ValueError("Unknown inquire_type value {}".format(inquire_type))

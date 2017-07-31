@@ -12,7 +12,12 @@ class Protocol(object):
     TODO complete...
     '''
     def __init__(self):
+
         pass
+
+    def project(self):
+
+        raise NotImplementedError()
 
 
 class White(Protocol):

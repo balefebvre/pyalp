@@ -5,7 +5,7 @@ import pyalp as alp
 dev = alp.device.allocate()
 
 # Define stimulus
-stim = alp.stimulus.Film()
+stim = alp.stimulus.Binary()
 
 # Display stimulus
 dev.display(stim)

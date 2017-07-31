@@ -1,3 +1,4 @@
+import numpy as np
 import os
 
 import pyalp as alp
@@ -14,6 +15,104 @@ class Stimulus(object):
     def __init__(self):
 
         pass
+
+    def prompt_input_parameters(self):
+
+        raise NotImplementedError()
+
+    def display(self, device):
+
+        raise NotImplementedError()
+
+
+class Binary(Stimulus):
+    """TODO add docstring.
+
+    Parameters
+    ----------
+    rate: float
+        Frame rate [Hz].
+    interactive: bool, optional
+        Specify if it should prompt the input parameters. The default values is True.
+
+    TODO complete.
+
+    """
+
+    def __init__(self, rate=30.0, interactive=False):
+
+        Stimulus.__init__(self)
+
+        self.rate = rate
+
+        if interactive:
+
+            self.prompt_input_parameters()
+
+    def display(self, device):
+        """TODO add docstring."""
+
+        # Define images.
+        nb_images = 2
+        width = device.inquire_display_width()
+        height = device.inquire_display_height()
+        shape = (nb_images, width, height)
+        dtype = np.uint8
+        images = np.empty(shape, dtype=dtype)
+        images[0, :, :] = np.iinfo(dtype).min
+        images[1, :, :] = np.iinfo(dtype).max
+
+        # Define frames.
+        nb_frames = int(1.0 * self.rate)
+        frames = np.empty(nb_frames, dtype=np.int)
+        frames[np.arange(0, nb_frames) % 2 == 0] = 0
+        frames[np.arange(0, nb_frames) % 2 == 1] = 1
+
+        # # Display available memory.
+        # ans = device.inquire_available_memory()
+        # print("Available memory [number of binary pictures]: {}".format(ans))
+
+        # Compute picture time.
+        picture_time = int(1.0e+6 / self.rate)
+
+        # Allocate 1st sequence of frames.
+        sequence_1 = alp.sequence.Binary(picture_time)
+        device.allocate(sequence_1)
+
+        # Allocate 2nd sequence of frames.
+        sequence_2 = alp.sequence.Binary(picture_time)
+        device.allocate(sequence_2)
+
+        # # Display available memory.
+        # ans = device.inquire_available_memory()
+        # print("Available memory [number of binary pictures]: {}".format(ans))
+
+        # Reduce bit depth of the display and suppress dark phase.
+        device.control_bit_number(sequence_1, 1)
+        device.control_binary_mode(sequence_1, 'uninterrupted')
+        device.control_bit_number(sequence_2, 1)
+        device.control_binary_mode(sequence_2, 'uninterrupted')
+
+        # Set timing.
+        device.timing(sequence_1)
+        device.timing(sequence_2)
+
+        # Set up queue mode.
+        device.control_projection(queue_mode=True)
+
+        # Transmit pictures into ALP memory.
+        device.put(sequence_1)
+        device.put(sequence_2)
+
+        # Start 1st sequence of frames.
+        device.start(sequence_1)
+
+        # Wait.
+        device.wait_interruption()
+
+        # return
+
+        raise NotImplementedError()
 
 
 class Film(Stimulus):
@@ -32,7 +131,8 @@ class Film(Stimulus):
 
     """
 
-    dirname = os.path.expanduser(os.path.join("~", ".pyalp", "films"))
+    dirname = os.path.join("E:", "BINVECS")
+    # dirname = os.path.expanduser(os.path.join("~", ".pyalp", "films"))
 
     def __init__(self, bin_pathname="", vec_pathname="", rate=30.0, nb_lut_frames=200, interactive=True):
 
@@ -50,7 +150,11 @@ class Film(Stimulus):
     def prompt_input_arguments(self):
         """Prompt the input arguments."""
 
-        print("# Film stimulus\n")
+        sep = ""
+
+        print("# Film stimulus")
+
+        print(sep)
 
         # Print all the user directories.
         user_dirnames = os.listdir(self.dirname)
@@ -61,38 +165,86 @@ class Film(Stimulus):
         user_dirname = user_dirnames[user_id]
         user_pathname = os.path.join(self.dirname, user_dirname)
 
-        # Print all the BIN files.
+        print(sep)
+
+        # Print all the .bin files.
         bin_pathname = os.path.join(user_pathname, "Bin")
         bin_filenames = [name for name in os.listdir(bin_pathname) if os.path.isfile(os.path.join(bin_pathname, name))]
         for bin_filename_id, bin_filename in enumerate(bin_filenames):
             print("  {}. {}".format(bin_filename_id, bin_filename))
-        # Prompt BIN filename identifier.
+        # Prompt .bin filename identifier.
         bin_id = alp.utils.input("Enter the .bin file number (e.g. 0): ", int)
         bin_filename = bin_filenames[bin_id]
-        bin_pathname = os.path.join(bin_pathname, bin_filename)
+        self.bin_pathname = os.path.join(bin_pathname, bin_filename)
 
-        # Print all the VEC files.
+        print(sep)
+
+        # Print all the .vec files.
         vec_pathname = os.path.join(user_pathname, "Vec")
         vec_filenames = [name for name in os.listdir(vec_pathname) if os.path.isfile(os.path.join(vec_pathname, name))]
         for vec_filename_id, vec_filename in enumerate(vec_filenames):
             print("  {}. {}".format(vec_filename_id, vec_filename))
-        # Prompt VEC filename identifier.
+        # Prompt .vec filename identifier.
         vec_id = alp.utils.input("Enter the .vec file number (e.g. 0): ", int)
         vec_filename = vec_filenames[vec_id]
-        vec_pathname = os.path.join(vec_pathname, vec_filename)
+        self.vec_pathname = os.path.join(vec_pathname, vec_filename)
+
+        print(sep)
 
         # Prompt the frame rate.
-        rate = alp.utils.input("Enter the frame rate [Hz] (e.g. {}): ".format(self.rate), float)
+        self.rate = alp.utils.input("Enter the frame rate [Hz] (e.g. {}): ".format(self.rate), float)
+
+        print(sep)
 
         # Prompt the advanced features.
         advanced = alp.utils.input("Advanced features (y/n): ", lambda arg: arg == "y")
 
         if advanced:
             # Prompt the number of frames in the look up table.
-            nb_lut_frames = alp.utils.input("Number of frames in the look up table (e.g. {}): ".format(self.nb_lut_frames),
-                                            int)
+            prompt = "Number of frames in the look up table (e.g. {}): ".format(self.nb_lut_frames)
+            callback = int
+            self.nb_lut_frames = alp.utils.input(prompt, callback)
 
-        self.bin_pathname = ""
-        self.vec_pathname = ""
-        self.rate = 30.0
-        self.nb_lut_frames = 200
+        print(sep)
+
+        # Display input arguments.
+        print(".vec pathname: {}".format(self.vec_pathname))
+        print(".bin pathname: {}".format(self.bin_pathname))
+        print("frame rate [Hz]: {}".format(self.rate))
+        if advanced:
+            print("number of frames in the look up table: {}".format(self.nb_lut_frames))
+
+        print(sep)
+
+        return
+
+    def display(self, device):
+        """TODO add docstring."""
+
+        # Read .vec file.
+        frame_ids = alp.io.load_vec(self.vec_pathname)
+        nb_vec_frames = len(frame_ids)
+        print("Number of .vec frames: {}".format(nb_vec_frames))
+        print(".vec frame identifiers: {}".format(frame_ids))
+
+        # Read header of .bin file.
+        bin_header = alp.io.load_bin_header(self.bin_pathname)
+        print(".bin header: {}".format(bin_header))
+
+        # Allocate 1st sequence of frames.
+        sequence_1 = None
+        device.allocate(sequence_1)
+        # TODO 3. Allocate 1st sequence of frames.
+
+        # Allocate 2nd sequence of frames.
+        sequence_2 = None
+        device.allocate(sequence_2)
+        # TODO 4. Allocate 2nd sequence of frames.
+
+        # TODO 5. Play 1st and 2nd sequences on DMD.
+
+        # TODO 6. Repeat step 3., 4. and 5.
+
+        # TODO 7. Wait for key stroke.
+
+        raise NotImplementedError()
