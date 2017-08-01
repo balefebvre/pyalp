@@ -16,7 +16,7 @@ class Stimulus(object):
 
         pass
 
-    def prompt_input_parameters(self):
+    def prompt_input_arguments(self):
 
         raise NotImplementedError()
 
@@ -47,7 +47,12 @@ class Binary(Stimulus):
 
         if interactive:
 
-            self.prompt_input_parameters()
+            self.prompt_input_arguments()
+
+    def prompt_input_arguments(self):
+        """TODO add docstring."""
+
+        raise NotImplementedError()
 
     def display(self, device):
         """TODO add docstring."""
