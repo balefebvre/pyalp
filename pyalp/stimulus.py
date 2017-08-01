@@ -30,10 +30,10 @@ class Binary(Stimulus):
 
     Parameters
     ----------
-    rate: float
-        Frame rate [Hz].
+    rate: float, optional
+        Frame rate [Hz]. The default value is 30.0.
     interactive: bool, optional
-        Specify if it should prompt the input parameters. The default values is True.
+        Specify if it should prompt the input parameters. The default value is True.
 
     TODO complete.
 
@@ -44,8 +44,9 @@ class Binary(Stimulus):
         Stimulus.__init__(self)
 
         self.rate = rate
+        self.interactive = interactive
 
-        if interactive:
+        if self.interactive:
 
             self.prompt_input_arguments()
 
