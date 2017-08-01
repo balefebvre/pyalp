@@ -3,32 +3,36 @@ import pprint
 import time
 
 import pyalp as alp
-
+import pyalp.utils
 
 
 class Protocol(object):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+
+    """
+
     def __init__(self):
 
         pass
 
-    def project(self):
+    def project(self, device):
 
         raise NotImplementedError()
 
 
 class White(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+
+    """
+
     def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
-        self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
+        self.rate = rate  # Hz (frame rate)
+        self.picture_time = int(1.0e6 / self.rate)  # us (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 
@@ -41,7 +45,7 @@ class White(Protocol):
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO check if timing management is correct...
         device.timing(sequence)
-        device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        device.put(sequence)  # TODO check why in Vialux's example put takes place before timing (no control)
         if __debug__:
             settings = sequence.inquire_settings(device)
             print("White sequence's settings:")
@@ -56,14 +60,16 @@ class White(Protocol):
 
 
 class Black(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+
+    """
+
     def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
-        self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
+        self.rate = rate  # Hz (frame rate)
+        self.picture_time = int(1.0e6 / self.rate)  # us (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 
@@ -76,7 +82,7 @@ class Black(Protocol):
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO check if timing management is correct...
         device.timing(sequence)
-        device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        device.put(sequence)  # TODO check why in Vialux's example put takes place before timing (no control)
         if __debug__:
             settings = sequence.inquire_settings(device)
             print("Black sequence's settings:")
@@ -91,14 +97,16 @@ class Black(Protocol):
 
 
 class BlackWhite(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+
+    """
+
     def __init__(self, rate=50.0, nb_repetitions=None, infinite_loop=False):
         Protocol.__init__(self)
-        self.rate = rate # Hz (frame rate)
-        self.picture_time = int(1.0e6 / self.rate) # µs (time between the start of two consecutive pictures)
+        self.rate = rate  # Hz (frame rate)
+        self.picture_time = int(1.0e6 / self.rate)  # us (time between the start of two consecutive pictures)
         self.nb_repetitions = nb_repetitions
         self.infinite_loop = infinite_loop
 
@@ -111,7 +119,7 @@ class BlackWhite(Protocol):
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO manage timing...
         # device.timing(sequence)
-        device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        device.put(sequence)  # TODO check why in Vialux's example put takes place before timing (no control)
         # Start sequence
         device.start(sequence, infinite_loop=self.infinite_loop)
         # Wait sequence end
@@ -122,26 +130,31 @@ class BlackWhite(Protocol):
 
 
 class Checkerboard(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+
+    """
+
     def __init__(self, rate=30.0, square_size=20, checkerboard_size=5, nb_repetitions=10, interactive=True):
         Protocol.__init__(self)
-        if interactive: # prompt input parameters
+        if interactive:  # prompt input parameters
             print("# Checkerboard stimulus")
             rate = alp.utils.input("Enter the frame rate [Hz] (e.g. {}): ".format(rate), float)
-            square_size = alp.utils.input("Number of pixels to make one side of a single check (e.g. {}): ".format(square_size), int)
-            checkerboard_size = alp.utils.input("Number of checks to make one side of the checkerboard (e.g. {}): ".format(checkerboard_size), int)
+            prompt = "Number of pixels to make one side of a single check (e.g. {}): ".format(square_size)
+            square_size = alp.utils.input(prompt, int)
+            prompt = "Number of checks to make one side of the checkerboard (e.g. {}): ".format(checkerboard_size)
+            checkerboard_size = alp.utils.input(prompt, int)
             nb_repetitions = alp.utils.input("Enter the number of repetitions (e.g. {}): ".format(nb_repetitions), int)
-        self.rate = rate # Hz
-        self.picture_time = int(1.0e6 / self.rate) # µs
-        self.square_size = square_size # px
+        self.rate = rate  # Hz
+        self.picture_time = int(1.0e6 / self.rate)  # us
+        self.square_size = square_size  # px
         self.nb_repetitions = nb_repetitions
-        self.checkerboard_size = checkerboard_size * self.square_size # px
+        self.checkerboard_size = checkerboard_size * self.square_size  # px
 
-    def wait(self, device, sleep_duration=30.0e-3):
-        '''TODO add doc...'''
+    @staticmethod
+    def wait(device, sleep_duration=30.0e-3):
+        """TODO add doc..."""
         queue_info = device.inquire_projection('progress')
         while queue_info.nWaitingSequences == 1:
             queue_info = device.inquire_projection('progress')
@@ -150,8 +163,9 @@ class Checkerboard(Protocol):
         return
 
     def project(self, device):
-        '''Project checkerboard protocol'''
-        device.control_projection(inversion=False, queue_mode=True) # TODO check if queue mode toggle should come after allocations...
+        """Project checkerboard protocol"""
+        device.control_projection(inversion=False, queue_mode=True)
+        # TODO check if queue mode toggle should come after allocations...
         sequence_1 = alp.sequence.Checkerboard(seed=42)
         sequence_2 = alp.sequence.Checkerboard(seed=None)
         # Setup first sequence
@@ -209,14 +223,14 @@ class Checkerboard(Protocol):
 
 
 class FullField(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, footprint_array, rate=500.0, nb_repetitions=10, infinite_loop=False):
         Protocol.__init__(self)
-        self.rate = rate # Hz
-        self.picture_time = int(1.0e6 / self.rate) # µs
+        self.rate = rate  # Hz
+        self.picture_time = int(1.0e6 / self.rate)  # us
         self.infinite_loop = infinite_loop
         self.nb_repetitions = nb_repetitions
         self.footprint_array = footprint_array
@@ -230,7 +244,7 @@ class FullField(Protocol):
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO manage timing...
         device.timing(sequence)
-        device.put(sequence) # TODO check why in Vialux's example put takes place before timing (no control)
+        device.put(sequence)  # TODO check why in Vialux's example put takes place before timing (no control)
         # Start sequence
         device.start(sequence, infinite_loop=self.infinite_loop)
         # Wait sequence end
@@ -241,36 +255,40 @@ class FullField(Protocol):
 
 
 class MovingBar(Protocol):
-    '''TODO add doc...
+    """TODO add doc...
 
     TODO complete...
-    '''
+    """
     def __init__(self, w, l, x, y, theta, v, rate, n_repetitions=10):
         Protocol.__init__(self)
-        self.w = w # arb. unit (i.e. width)
-        self.l = l # arb. unit (i.e. length)
-        self.x = x # arb. unit (i.e. x-coordinate)
-        self.y = y # arb. unit (i.e. y-coordinate)
-        self.theta = theta # rad (i.e. direction & orientation)
-        self.v = v # arb.unit / s (i.e. velocity)
-        self.rate = rate # Hz
-        self.picture_time = int(1.0e6 * self.rate) # ns
+        self.w = w  # arb. unit (i.e. width)
+        self.l = l  # arb. unit (i.e. length)
+        self.x = x  # arb. unit (i.e. x-coordinate)
+        self.y = y  # arb. unit (i.e. y-coordinate)
+        self.theta = theta  # rad (i.e. direction & orientation)
+        self.v = v  # arb.unit / s (i.e. velocity)
+        self.rate = rate  # Hz
+        self.picture_time = int(1.0e6 * self.rate)  # ns
         self.n_repetitions = n_repetitions
-        self.square_size = 30 # px
-        self.checkerboard_size = 5 * self.square_size # px
+        self.square_size = 30  # px
+        self.checkerboard_size = 5 * self.square_size  # px
 
     def project(self, device):
-        '''Project moving bar protocol'''
-        return
+        """Project moving bar protocol"""
+
+        # return
+
+        raise NotImplementedError()
 
 
 class Film(Protocol):
-    '''TODO add docstring...
+    """TODO add docstring...
     
     TODO complete...
-    '''
 
-    binvec_pathname = os.path.join("E:", "BINVECS") # path to the BINVEC directory
+    """
+
+    binvec_pathname = os.path.join("E:", "BINVECS")  # path to the BINVEC directory
 
     def __init__(self, user_id=0, bin_id=0, vec_id=0, rate=40.0, nb_lut_frames=200, interactive=True):
 
@@ -291,23 +309,29 @@ class Film(Protocol):
 
             # Print all the BIN files.
             bin_pathname = os.path.join(user_pathname, "Bin")
-            bin_filenames = [name for name in os.listdir(bin_pathname) if os.path.isfile(os.path.join(bin_pathname, name))]
+            bin_filenames = [
+                name for name in os.listdir(bin_pathname) if os.path.isfile(os.path.join(bin_pathname, name))
+            ]
             for bin_filename_id, bin_filename in enumerate(bin_filenames):
                 print("  {}. {}".format(bin_filename_id, bin_filename))
             # Prompt BIN filename identifier.
             bin_id = alp.utils.input("Enter the .bin file number (e.g. {}): ".format(bin_id), int)
             bin_filename = bin_filenames[bin_id]
             bin_pathname = os.path.join(bin_pathname, bin_filename)
+            print(".bin pathname: {}".format(bin_pathname))
 
             # Print all the VEC files.
             vec_pathname = os.path.join(user_pathname, "Vec")
-            vec_filenames = [name for name in os.listdir(vec_pathname) if os.path.isfile(os.path.join(vec_pathname, name))]
+            vec_filenames = [
+                name for name in os.listdir(vec_pathname) if os.path.isfile(os.path.join(vec_pathname, name))
+            ]
             for vec_filename_id, vec_filename in enumerate(vec_filenames):
                 print("  {}. {}".format(vec_filename_id, vec_filename))
             # Prompt VEC filename identifier.
             vec_id = alp.utils.input("Enter the .vec file number (e.g. {}): ".format(vec_id), int)
             vec_filename = vec_filenames[vec_id]
             vec_pathname = os.path.join(vec_pathname, vec_filename)
+            print(".vec pathname: {}".format(vec_pathname))
 
             # Prompt the frame rate.
             rate = alp.utils.input("Enter the frame rate [Hz] (e.g. {}): ".format(rate), float)
@@ -318,7 +342,8 @@ class Film(Protocol):
             if advanced:
 
                 # Prompt the number of frames in the look up table.
-                nb_lut_frames = alp.utils.input("Number of frames in the look up table (e.g. {}): ".format(nb_lut_frames), int)
+                prompt = "Number of frames in the look up table (e.g. {}): ".format(nb_lut_frames)
+                nb_lut_frames = alp.utils.input(prompt, int)
 
         self.user_id = user_id
         self.bin_id = bin_id
@@ -346,8 +371,9 @@ class Film(Protocol):
 
         raise NotImplementedError()
 
-    def wait(self, device, sleep_duration=30.0e-3):
-        '''TODO add doc...'''
+    @staticmethod
+    def wait(device, sleep_duration=30.0e-3):
+        """TODO add doc..."""
         queue_info = device.inquire_projection('progress')
         while queue_info.nWaitingSequences == 1:
             queue_info = device.inquire_projection('progress')
@@ -355,8 +381,9 @@ class Film(Protocol):
         device.control_projection(reset_queue=True)
 
     def project(self, device):
-        '''Project film protocol'''
-        device.control_projection(inversion=False, queue_mode=True) # TODO check if queue mode toggle should come after allocations...
+        """Project film protocol"""
+        device.control_projection(inversion=False, queue_mode=True)
+        # TODO check if queue mode toggle should come after allocations...
         sequence_1 = alp.sequence.Checkerboard(seed=42)
         sequence_2 = alp.sequence.Checkerboard(seed=None)
         # Setup first sequence
