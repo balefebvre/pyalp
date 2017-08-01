@@ -206,7 +206,22 @@ class Device(object):
         ret_val_ = api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, sequence_id_ptr_)
         if ret_val_ == ALP_OK:
             sequence.id = sequence_id_.value
+            sequence.device = self
             return
+        else:
+            raise Exception("AlpSeqAlloc: {}".format(ret_val_))
+
+    def allocate_bis(self, bit_planes, pic_num):
+        """Allocate sequence (bis)"""
+        device_id_ = c_ulong(self.id)
+        bit_planes_ = c_long(bit_planes)
+        pic_num_ = c_long(pic_num)
+        sequence_id_ = c_ulong(ALP_DEFAULT)
+        sequence_id_ptr_ = byref(sequence_id_)
+        ret_val_ = api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, sequence_id_ptr_)
+        if ret_val_ == ALP_OK:
+            sequence_id = sequence_id_.value
+            return sequence_id
         else:
             raise Exception("AlpSeqAlloc: {}".format(ret_val_))
 

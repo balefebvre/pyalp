@@ -24,9 +24,11 @@ class Sequence(object):
         self.trigger_in_delay = ALP_DEFAULT
         # Save additional parameter
         self.sequence_id = ALP_DEFAULT
+        self.device = None
 
     def is_finite(self):
         """TODO add doc..."""
+
         return not(self.infinite_loop)
 
     def inquire(self, device, inquire_type):
@@ -157,6 +159,39 @@ class Sequence(object):
             # TODO complete...
         }
         return settings
+
+    def control(self, control_type, control_value):
+        """TODO add docstring."""
+
+        self.device.control(self, control_type, control_value)
+
+        return
+
+    def control_nb_repetitions(self, nb_repetitions):
+        """TODO add docstring."""
+
+        self.control(ALP_SEQ_REPEAT, nb_repetitions)
+
+        return
+
+    def control_bit_number(self, bit_number):
+        """TODO add docstring."""
+
+        self.control(ALP_BITNUM, bit_number)
+
+        return
+
+    def control_binary_mode(self, binary_mode):
+        """TODO add docstring."""
+
+        if binary_mode is 'normal':
+            self.control(ALP_BIN_MODE, ALP_BIN_NORMAL)
+        elif binary_mode is 'uninterrupted':
+            self.control(ALP_BIN_MODE, ALP_BIN_UNINTERRUPTED)
+        else:
+            raise NotImplementedError()
+
+        return
 
 
 class White(Sequence):

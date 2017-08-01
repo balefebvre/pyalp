@@ -30,6 +30,8 @@ class Binary(Stimulus):
 
     Parameters
     ----------
+    vec_pathname: string, optional
+        Pathname of the .vec file.
     rate: float, optional
         Frame rate [Hz]. The default value is 30.0.
     interactive: bool, optional
@@ -39,11 +41,13 @@ class Binary(Stimulus):
 
     """
 
-    def __init__(self, rate=30.0, interactive=False):
+    def __init__(self, vec_pathname="", rate=30.0, nb_repetitions=1, interactive=False):
 
         Stimulus.__init__(self)
 
+        self.vec_pathname = vec_pathname
         self.rate = rate
+        self.nb_repetitions = nb_repetitions
         self.interactive = interactive
 
         if self.interactive:
@@ -74,44 +78,40 @@ class Binary(Stimulus):
         frames[np.arange(0, nb_frames) % 2 == 0] = 0
         frames[np.arange(0, nb_frames) % 2 == 1] = 1
 
-        # # Display available memory.
-        # ans = device.inquire_available_memory()
-        # print("Available memory [number of binary pictures]: {}".format(ans))
+        # Display available memory before allocation.
+        ans = device.inquire_available_memory()
+        print("Available memory before allocation [number of binary pictures]: {}".format(ans))
 
         # Compute picture time.
         picture_time = int(1.0e+6 / self.rate)
 
-        # Allocate 1st sequence of frames.
-        sequence_1 = alp.sequence.Binary(picture_time)
-        device.allocate(sequence_1)
+        # Define the sequence of frames.
+        sequence = None
 
-        # Allocate 2nd sequence of frames.
-        sequence_2 = alp.sequence.Binary(picture_time)
-        device.allocate(sequence_2)
+        # Allocate memory for the sequence of frames.
+        device.allocate(sequence)
 
-        # # Display available memory.
-        # ans = device.inquire_available_memory()
-        # print("Available memory [number of binary pictures]: {}".format(ans))
+        # Display available memory after allocation.
+        ans = device.inquire_available_memory()
+        print("Available memory after allocation [number of binary pictures]: {}".format(ans))
 
         # Reduce bit depth of the display and suppress dark phase.
-        device.control_bit_number(sequence_1, 1)
-        device.control_binary_mode(sequence_1, 'uninterrupted')
-        device.control_bit_number(sequence_2, 1)
-        device.control_binary_mode(sequence_2, 'uninterrupted')
+        bit_number = 1
+        sequence.control_bit_number(bit_number)
+        binary_mode = 'uninterrupted'
+        sequence.control_binary_mode(binary_mode)
 
         # Set timing.
-        device.timing(sequence_1)
-        device.timing(sequence_2)
+        device.timing(sequence)
 
         # Set up queue mode.
         device.control_projection(queue_mode=True)
 
         # Transmit pictures into ALP memory.
-        device.put(sequence_1)
-        device.put(sequence_2)
+        device.put(sequence)
 
         # Start 1st sequence of frames.
-        device.start(sequence_1)
+        device.start(sequence)
 
         # Wait.
         device.wait_interruption()
