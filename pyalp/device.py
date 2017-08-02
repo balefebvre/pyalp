@@ -24,14 +24,15 @@ class Device(object):
 
     def __init__(self, device_number):
         """Allocate an ALP hardware system (board set)"""
-        # Save input parameter
+        # Save input parameter.
         self.nb = device_number
-        # Allocate device
+        # Allocate device.
         device_number_ = c_long(device_number)
         init_flag_ = c_long(ALP_DEFAULT)
         device_id_ = c_ulong(ALP_DEFAULT)
         device_id_ptr_ = byref(device_id_)
         ret_val_ = api.AlpDevAlloc(device_number_, init_flag_, device_id_ptr_)
+        # Check returned value.
         if ret_val_ == ALP_OK:
             self.id = device_id_.value
         else:
@@ -39,8 +40,10 @@ class Device(object):
 
     def __del__(self):
         """Deallocate the ALP hardware system (board set)"""
+        # Deallocate device.
         device_id_ = c_ulong(self.id)
         ret_val_ = api.AlpDevFree(device_id_)
+        # Check returned value.
         if ret_val_ == ALP_OK:
             return
         else:

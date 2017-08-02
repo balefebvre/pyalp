@@ -1,18 +1,6 @@
-from .base import get_path, load_api
-
-
-
-# Retrieve Vialux ALP path
-path = get_path()
-
-# Load Vialux ALP API
-api = load_api(path)
-
-
-
+from .base import path, api
 
 from . import device, io, sequence, stimulus, protocol
-
 
 
 __all__ = [

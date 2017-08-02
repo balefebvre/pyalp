@@ -1,11 +1,10 @@
-from .api import Api
+from .api import path, api
+
 from .constant import *
 from .type import tAlpProjProgress
-from .utils import get_path, load_api
-
 
 
 __all__ = [
-    'get_path',
-    'load_api',
+    'path',
+    'api',
 ]
