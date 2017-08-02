@@ -1,8 +1,8 @@
-## Special value
+# Special value
 ALP_DEFAULT = 0
-ALP_INVALID_ID = 2 ** 32 - 1 # ulong maximun
+ALP_INVALID_ID = 2 ** 32 - 1  # ulong maximun
 
-## Return value
+# Return value
 ALP_OK = 0
 ALP_NOT_ONLINE = 1001
 ALP_NOT_IDLE = 1002
@@ -20,7 +20,7 @@ ALP_NOT_CONFIGURED = 1013
 ALP_LOADER_VERSION = 1014
 ALP_ERROR_POWER_DOWN = 1018
 
-## Device inquire and control types
+# Device inquire and control types
 ALP_DEVICE_NUMBER = 2000
 ALP_VERSION = 2001
 ALP_AVAIL_MEMORY = 2003
@@ -55,7 +55,7 @@ ALP_PWM_LEVEL = 2063
 ALP_DEV_DMD_MODE = 2064
 ALP_DMD_POWER_FLOAT = 1
 
-## Sequence inquire and control types
+# Sequence inquire and control types
 ALP_BITPLANES = 2200
 ALP_BITNUM = 2103
 ALP_BIN_MODE = 2104
@@ -97,7 +97,7 @@ ALP_FLUT_OFFSET9 = 2122
 ALP_PWM_MODE = 2107
 ALP_FLEX_PWM = 3
 
-## Projection inquire and control types
+# Projection inquire and control types
 ALP_PROJ_MODE = 2300
 ALP_MASTER = 2301
 ALP_SLAVE = 2302
@@ -128,7 +128,7 @@ ALP_FLUT_MAX_ENTRIES9 = 2324
 ALP_FLUT_WRITE_9BIT = 2325
 ALP_FLUT_WRITE_18BIT = 2326
 
-## LED types
+# LED types
 ALP_HLD_PT120_RED = 257
 ALP_HLD_PT120_GREEN = 258
 ALP_HLD_PT120_BLUE = 259
@@ -137,7 +137,7 @@ ALP_HLD_CBT90_WHITE = 262
 ALP_HLD_PT120TE_BLUE = 263
 ALP_HLD_CBT140_WHITE = 264
 
-## LED inquire and control types
+# LED inquire and control types
 ALP_LED_SET_CURRENT = 1001
 ALP_LED_BRIGHTNESS = 1002
 ALP_LED_FORCE_OFF = 1003
@@ -149,5 +149,29 @@ ALP_LED_MEASURED_CURRENT = 1102
 ALP_LED_TEMPERATURE_REF = 1103
 ALP_LED_TEMPERATURE_JUNCTION = 1104
 
-## Extended LED inquire and control types
+# Extended LED inquire and control types
 ALP_LED_ALLOC_PARAMS = 2101
+
+
+# TODO correct following lines, different constants can have the same value (e.g. ALP_DEFAULT and ALP_LED_AUTO_OFF)
+# look_up_table = dict([
+#     (value, key)
+#     for key, value in globals().items()
+#     if key[0:4] == "ALP_"
+# ])
+#
+# def constant_to_string(constant):
+#     """TODO add docstring"""
+#     string = look_up_table[constant]
+#     return string
+
+dmd_type_look_up_table = dict([
+    (value, key)
+    for key, value in globals().items()
+    if key[0:12] == "ALP_DMDTYPE_"
+])
+
+def dmd_type_constant_to_string(dmd_type_constant):
+    """TODO add docstring"""
+    dmd_type_string = dmd_type_look_up_table[dmd_type_constant]
+    return dmd_type_string

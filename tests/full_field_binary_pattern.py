@@ -2,10 +2,10 @@ import pyalp as alp
 
 
 # Allocate device
-dev = alp.device.allocate()
+dev = alp.device.allocate(verbose=True)
 
 # Define stimulus
-stim = alp.stimulus.Binary()
+stim = alp.stimulus.FullFieldBinaryPattern()
 
 # Display stimulus
 dev.display(stim)

@@ -10,9 +10,11 @@ from .protocol import Protocol
 from .stimulus import Stimulus
 
 
-def allocate(device_number=ALP_DEFAULT):
+def allocate(device_number=ALP_DEFAULT, verbose=False):
     """Allocate an ALP hardware system (board set)"""
     device = Device(device_number)
+    if verbose:
+        device.print_settings()
     return device
 
 
@@ -67,9 +69,11 @@ class Device(object):
         else:
             raise Exception("AlpDevInquire: {}".format(ret_val_))
 
-    def inquire_dmd_type(self):
+    def inquire_dmd_type(self, human_readable=False):
         """Inquire DMD type"""
         dmd_type = self.inquire(ALP_DEV_DMDTYPE)
+        if human_readable:
+            dmd_type = dmd_type_constant_to_string(dmd_type)
         return dmd_type
 
     def get_resolution(self):
@@ -104,39 +108,66 @@ class Device(object):
         # Return DMD resolution
         return resolution
 
-    def inquire_number(self):
+    def inquire_serial_number(self, human_readable=False):
         """Inquire serial number of the ALP device"""
-        number = self.inquire(ALP_DEVICE_NUMBER)
-        return number
+        serial_number = self.inquire(ALP_DEVICE_NUMBER)
+        if human_readable:
+            serial_number = str(serial_number)
+        return serial_number
 
-    def inquire_version(self):
+    def inquire_version(self, human_readable=False):
         """Inquire version number of the ALP device"""
         version = self.inquire(ALP_VERSION)
+        if human_readable:
+            if version == 0x0401:
+                version = "ALP-4.1 [0x0401]"
+            else:
+                version = "ALP-?.? [{}]".format(hex(version))  # TODO correct.
         return version
 
-    def inquire_available_memory(self):
+    def inquire_available_memory(self, human_readable=False):
         """Inquire available memory of the ALP device"""
         available_memory = self.inquire(ALP_AVAIL_MEMORY)
+        if human_readable:
+            available_memory = "{} binary frames free".format(available_memory)
         return available_memory
 
-    def inquire_dmd_mode(self):
+    def inquire_dmd_mode(self, human_readable=False):
         """Inquire DMD mode of the ALP device"""
         dmd_mode = self.inquire(ALP_DEV_DMD_MODE)
+        if human_readable:
+            if dmd_mode == ALP_DMD_POWER_FLOAT:
+                dmd_mode = "ALP_DMD_POWER_FLOAT"
+            elif dmd_mode == ALP_DEFAULT:
+                dmd_mode = "ALP_DEFAULT"
+            else:
+                raise NotImplementedError()
         return dmd_mode
 
-    def inquire_display_height(self):
+    def inquire_display_height(self, human_readable=False):
         """Inquire number of mirror rows on the DMD"""
         display_height = self.inquire(ALP_DEV_DISPLAY_HEIGHT)
+        if human_readable:
+            display_height = "{} mirror rows on the DMD".format(display_height)
         return display_height
 
-    def inquire_display_width(self):
+    def inquire_display_width(self, human_readable=False):
         """Inquire number of mirror columns on the DMD"""
         display_width = self.inquire(ALP_DEV_DISPLAY_WIDTH)
+        if human_readable:
+            display_width = "{} mirror columns on the DMD".format(display_width)
         return display_width
 
-    def inquire_usb_connection(self):
+    def inquire_usb_connection(self, human_readable=False):
         """Inquire the status of the USB connection"""
         usb_connection = self.inquire(ALP_USB_CONNECTION)
+        if human_readable:
+            if usb_connection == ALP_DEFAULT:
+                usb_connection = "ALP_DEFAULT"
+            elif usb_connection == ALP_DEVICE_REMOVED:
+                usb_connection = "ALP_DEVICE_REMOVED"
+            else:
+                raise NotImplementedError()
         return usb_connection
 
     # # TODO ALP 4.2 only...
@@ -157,24 +188,40 @@ class Device(object):
     #     self.pcb_temperature = self.inquire(ALP_PCB_TEMPERATURE)
     #     return self.pcb_temperature
 
-    def inquire_pwm_level(self):
+    def inquire_pwm_level(self, human_readable=False):
         """Inquire PWM level (i.e. duty-cycle in percent)"""
         pwm_level = self.inquire(ALP_PWM_LEVEL)
+        if human_readable:
+            pwm_level = "{} %".format(pwm_level)
         return pwm_level
 
-    def inquire_settings(self):
+    def inquire_settings(self, human_readable=False):
+        """TODO add docstring"""
         settings = {
-            'number': self.inquire_number(),
-            'version': self.inquire_version(),
-            'available memory': self.inquire_available_memory(),
-            'dmd type': self.inquire_dmd_type(),
-            'dmd mode': self.inquire_dmd_mode(),
-            'display height': self.inquire_display_height(),
-            'display width': self.inquire_display_width(),
-            'usb connection': self.inquire_usb_connection(),
-            'pwm level': self.inquire_pwm_level(),
+            'serial number': self.inquire_serial_number(human_readable=human_readable),
+            'version': self.inquire_version(human_readable=human_readable),
+            'available memory': self.inquire_available_memory(human_readable=human_readable),
+            'dmd type': self.inquire_dmd_type(human_readable=human_readable),
+            'dmd mode': self.inquire_dmd_mode(human_readable=human_readable),
+            'display height': self.inquire_display_height(human_readable=human_readable),
+            'display width': self.inquire_display_width(human_readable=human_readable),
+            'usb connection': self.inquire_usb_connection(human_readable=human_readable),
+            'pwm level': self.inquire_pwm_level(human_readable=human_readable),
         }
         return settings
+
+    def print_settings(self):
+        """TODO add docstring"""
+
+        settings = self.inquire_settings(human_readable=True)
+
+        print("------------------ DMD settings ------------------")
+        for setting_key, setting_value in settings.items():
+            print("{}: {}".format(setting_key, setting_value))
+        print("--------------------------------------------------")
+        print("")
+
+        return
 
     def display(self, element):
         """Display element"""

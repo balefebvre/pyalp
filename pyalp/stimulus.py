@@ -25,15 +25,17 @@ class Stimulus(object):
         raise NotImplementedError()
 
 
-class Binary(Stimulus):
+class FullFieldBinaryPattern(Stimulus):
     """TODO add docstring.
 
     Parameters
     ----------
-    vec_pathname: string, optional
-        Pathname of the .vec file.
+    pathname: string, optional
+        Pathname of the file which contains the description of the binary pattern.
     rate: float, optional
         Frame rate [Hz]. The default value is 30.0.
+    nb_repetitions: integer, optional
+        Number of repetitions. The default value is 0 (i.e. stimulus is displayed once).
     interactive: bool, optional
         Specify if it should prompt the input parameters. The default value is True.
 
@@ -41,11 +43,11 @@ class Binary(Stimulus):
 
     """
 
-    def __init__(self, vec_pathname="", rate=30.0, nb_repetitions=1, interactive=False):
+    def __init__(self, pathname="", rate=30.0, nb_repetitions=0, interactive=False):
 
         Stimulus.__init__(self)
 
-        self.vec_pathname = vec_pathname
+        self.pathname = pathname
         self.rate = rate
         self.nb_repetitions = nb_repetitions
         self.interactive = interactive
@@ -82,11 +84,15 @@ class Binary(Stimulus):
         ans = device.inquire_available_memory()
         print("Available memory before allocation [number of binary pictures]: {}".format(ans))
 
-        # Compute picture time.
-        picture_time = int(1.0e+6 / self.rate)
+        # # Compute picture time.
+        # picture_time = int(1.0e+6 / self.rate)
 
         # Define the sequence of frames.
-        sequence = None
+        # sequence = None
+        # sequence = alp.sequence.BlackWhite()
+        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern)
+        # TODO find the best sequence (black and white with look up table v.s. black and white linear sequence).
+        # TODO find the best way to define this sequence.
 
         # Allocate memory for the sequence of frames.
         device.allocate(sequence)
