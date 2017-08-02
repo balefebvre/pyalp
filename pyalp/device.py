@@ -215,6 +215,7 @@ class Device(object):
 
         settings = self.inquire_settings(human_readable=True)
 
+        print("")
         print("------------------ DMD settings ------------------")
         for setting_key, setting_value in settings.items():
             print("{}: {}".format(setting_key, setting_value))
@@ -323,7 +324,7 @@ class Device(object):
         else:
             raise NotImplementedError()
 
-    def timing(self, sequence):
+    def control_timing(self, sequence):
         """Set sequence timing"""
         # TODO avoid set timing if possible (i.e. only default values)...
         device_id_ = c_ulong(self.id)
@@ -346,7 +347,7 @@ class Device(object):
         sequence_id_ = c_ulong(sequence.id)
         pic_offset_ = c_ulong(sequence.pic_offset)
         pic_load_ = c_ulong(sequence.pic_load)
-        user_array_ = utils.numpy_to_ctypes(sequence.get_user_array(self))
+        user_array_ = utils.numpy_to_ctypes(sequence.get_user_array())
         user_array_ptr_ = cast(user_array_, ctypes.c_void_p)
         ret_val_ = api.AlpSeqPut(device_id_, sequence_id_, pic_offset_, pic_load_, user_array_ptr_)
         if ret_val_ == ALP_OK:

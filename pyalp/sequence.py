@@ -11,17 +11,19 @@ class Sequence(object):
 
     TODO complete...
     """
-    def __init__(self, bit_planes, pic_num, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
+    def __init__(self, bit_planes, pic_num, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT, illuminate_time=ALP_DEFAULT,
+                 picture_time=ALP_DEFAULT, synch_delay=ALP_DEFAULT, synch_pulse_width=ALP_DEFAULT,
+                 trigger_in_delay=ALP_DEFAULT):
         # Save input parameters
         self.bit_planes = bit_planes
         self.pic_num = pic_num
         self.pic_offset = pic_offset
         self.pic_load = pic_load
-        self.illuminate_time = ALP_DEFAULT
-        self.picture_time = int(1.0e6 / 50.0)
-        self.synch_delay = ALP_DEFAULT
-        self.synch_pulse_width = ALP_DEFAULT
-        self.trigger_in_delay = ALP_DEFAULT
+        self.illuminate_time = illuminate_time
+        self.picture_time = picture_time
+        self.synch_delay = synch_delay
+        self.synch_pulse_width = synch_pulse_width
+        self.trigger_in_delay = trigger_in_delay
         # Save additional parameter
         self.id = ALP_DEFAULT
         self.device = None
@@ -206,6 +208,27 @@ class Sequence(object):
 
         return
 
+    def control_timing(self):
+        """TODO add docstring"""
+
+        self.device.control_timing(self)
+
+        return
+
+    def load(self):
+        """TODO add docstring"""
+
+        self.device.put(self)
+
+        return
+
+    def start(self):
+        """TODO add docstring"""
+
+        self.device.start(self)
+
+        return
+
 
 class White(Sequence):
     """TODO add doc...
@@ -318,10 +341,25 @@ class FullField(Sequence):
 class FullFieldBinaryPattern(Sequence):
     """TODO add docstring"""
 
-    def __init__(self, binary_pattern):
+    def __init__(self, binary_pattern, rate):
+        # Initialize sequence.
         bit_planes = 1  # bit depth of the pictures
         pic_num = len(binary_pattern)  # number of pictures
-        Sequence.__init__(self, bit_planes, pic_num)
+        picture_time = int(1.0e+6 / rate)
+        Sequence.__init__(self, bit_planes, pic_num, picture_time=picture_time)
+        # Save input parameter.
+        self.binary_pattern = binary_pattern
+        self.rate = rate
+
+    def get_user_array(self):
+        """TODO add docstring"""
+
+        array = self.binary_pattern[:, numpy.newaxis, numpy.newaxis].astype(numpy.uint8)
+        width, height = self.device.get_resolution()
+        nb_repetitions = (1, height, width)
+        frames = numpy.tile(array, nb_repetitions)
+
+        return frames
 
 # TODO delete...
 # class Sequence(object):

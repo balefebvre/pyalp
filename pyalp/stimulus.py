@@ -64,35 +64,18 @@ class FullFieldBinaryPattern(Stimulus):
     def display(self, device):
         """TODO add docstring."""
 
-        # Define images.
-        nb_images = 2
-        width = device.inquire_display_width()
-        height = device.inquire_display_height()
-        shape = (nb_images, width, height)
-        dtype = np.uint8
-        images = np.empty(shape, dtype=dtype)
-        images[0, :, :] = np.iinfo(dtype).min
-        images[1, :, :] = np.iinfo(dtype).max
-
-        # Define frames.
-        nb_frames = int(1.0 * self.rate)
-        frames = np.empty(nb_frames, dtype=np.int)
-        frames[np.arange(0, nb_frames) % 2 == 0] = 0
-        frames[np.arange(0, nb_frames) % 2 == 1] = 1
+        # Define the sequence of frames.
+        # sequence = None
+        # sequence = alp.sequence.BlackWhite()
+        binary_pattern = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0])  # TODO get binary patter from file.
+        rate = 1.0  # Hz
+        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern, rate)
+        # TODO find the best sequence (black and white with look up table v.s. black and white linear sequence).
+        # TODO find the best way to define this sequence.
 
         # Display available memory before allocation.
         ans = device.inquire_available_memory()
         print("Available memory before allocation [number of binary pictures]: {}".format(ans))
-
-        # # Compute picture time.
-        # picture_time = int(1.0e+6 / self.rate)
-
-        # Define the sequence of frames.
-        # sequence = None
-        # sequence = alp.sequence.BlackWhite()
-        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern)
-        # TODO find the best sequence (black and white with look up table v.s. black and white linear sequence).
-        # TODO find the best way to define this sequence.
 
         # Allocate memory for the sequence of frames.
         device.allocate(sequence)
@@ -101,30 +84,28 @@ class FullFieldBinaryPattern(Stimulus):
         ans = device.inquire_available_memory()
         print("Available memory after allocation [number of binary pictures]: {}".format(ans))
 
-        # Reduce bit depth of the display and suppress dark phase.
-        bit_number = 1
-        sequence.control_bit_number(bit_number)
-        binary_mode = 'uninterrupted'
-        sequence.control_binary_mode(binary_mode)
+        # Control the bit depth of the sequence display.
+        sequence.control_bit_number(1)
 
-        # Set timing.
-        device.timing(sequence)
+        # Control the dark phase property of the sequence display.
+        sequence.control_binary_mode('uninterrupted')
+
+        # Control the timing properties of the sequence display.
+        sequence.control_timing()
+
+        # Transmit the sequence of frames into memory.
+        sequence.load()
 
         # Set up queue mode.
         device.control_projection(queue_mode=True)
 
-        # Transmit pictures into ALP memory.
-        device.put(sequence)
-
-        # Start 1st sequence of frames.
-        device.start(sequence)
+        # Start the sequence of frames.
+        sequence.start()
 
         # Wait.
-        device.wait_interruption()
+        device.wait_interruption()  # TODO check.
 
-        # return
-
-        raise NotImplementedError()
+        return
 
 
 class Film(Stimulus):
