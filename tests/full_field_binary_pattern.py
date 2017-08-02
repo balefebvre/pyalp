@@ -5,7 +5,14 @@ import pyalp as alp
 dev = alp.device.allocate(verbose=True)
 
 # Define stimulus
-stim = alp.stimulus.FullFieldBinaryPattern()
+rate = 10.0e+3  # Hz
+duration = 5.0  # s
+nb_repetitions = int(rate * duration)
+stim = alp.stimulus.FullFieldBinaryPattern(rate=rate, nb_repetitions=nb_repetitions)
+
+print("rate: {} Hz".format(rate))
+print("picture time: {} ms".format(1.0e+3 / rate))
+print("")
 
 # Display stimulus
 dev.display(stim)

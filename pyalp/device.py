@@ -357,8 +357,10 @@ class Device(object):
 
     def start(self, sequence, infinite_loop=False):
         """Start sequence"""
+
         device_id_ = c_ulong(self.id)
         sequence_id_ = c_ulong(sequence.id)
+
         if infinite_loop:
             # Launch sequence with an infinite number of loops
             ret_val_ = api.AlpProjStartCont(device_id_, sequence_id_)

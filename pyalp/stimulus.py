@@ -33,9 +33,9 @@ class FullFieldBinaryPattern(Stimulus):
     pathname: string, optional
         Pathname of the file which contains the description of the binary pattern.
     rate: float, optional
-        Frame rate [Hz]. The default value is 30.0.
+        Frame rate [Hz]. The default value is 1.0.
     nb_repetitions: integer, optional
-        Number of repetitions. The default value is 0 (i.e. stimulus is displayed once).
+        Number of repetitions. The default value is 1 (i.e. stimulus is displayed once).
     interactive: bool, optional
         Specify if it should prompt the input parameters. The default value is True.
 
@@ -43,7 +43,7 @@ class FullFieldBinaryPattern(Stimulus):
 
     """
 
-    def __init__(self, pathname="", rate=30.0, nb_repetitions=0, interactive=False):
+    def __init__(self, pathname="", rate=1.0, nb_repetitions=1, interactive=False):
 
         Stimulus.__init__(self)
 
@@ -61,31 +61,35 @@ class FullFieldBinaryPattern(Stimulus):
 
         raise NotImplementedError()
 
-    def display(self, device):
+    def display(self, device, verbose=False):
         """TODO add docstring."""
 
         # Define the sequence of frames.
         # sequence = None
         # sequence = alp.sequence.BlackWhite()
-        binary_pattern = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0])  # TODO get binary patter from file.
-        rate = 1.0  # Hz
-        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern, rate)
+        binary_pattern = np.array([255, 0])  # TODO get binary patter from file.
+        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern, self.rate)
         # TODO find the best sequence (black and white with look up table v.s. black and white linear sequence).
         # TODO find the best way to define this sequence.
 
-        # Display available memory before allocation.
-        ans = device.inquire_available_memory()
-        print("Available memory before allocation [number of binary pictures]: {}".format(ans))
+        if verbose:
+            # Display available memory before allocation.
+            ans = device.inquire_available_memory()
+            print("Available memory before allocation [number of binary pictures]: {}".format(ans))
 
         # Allocate memory for the sequence of frames.
         device.allocate(sequence)
 
-        # Display available memory after allocation.
-        ans = device.inquire_available_memory()
-        print("Available memory after allocation [number of binary pictures]: {}".format(ans))
+        if verbose:
+            # Display available memory after allocation.
+            ans = device.inquire_available_memory()
+            print("Available memory after allocation [number of binary pictures]: {}".format(ans))
 
         # Control the bit depth of the sequence display.
         sequence.control_bit_number(1)
+
+        # Control the number of repetitions of the sequence display.
+        sequence.control_nb_repetitions(self.nb_repetitions)
 
         # Control the dark phase property of the sequence display.
         sequence.control_binary_mode('uninterrupted')
@@ -96,14 +100,14 @@ class FullFieldBinaryPattern(Stimulus):
         # Transmit the sequence of frames into memory.
         sequence.load()
 
-        # Set up queue mode.
-        device.control_projection(queue_mode=True)
+        # # Set up queue mode.
+        # device.control_projection(queue_mode=True)
 
         # Start the sequence of frames.
         sequence.start()
 
         # Wait.
-        device.wait_interruption()  # TODO check.
+        device.wait()  # TODO check.
 
         return
 

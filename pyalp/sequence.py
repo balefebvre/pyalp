@@ -355,6 +355,7 @@ class FullFieldBinaryPattern(Sequence):
         """TODO add docstring"""
 
         array = self.binary_pattern[:, numpy.newaxis, numpy.newaxis].astype(numpy.uint8)
+        # array = self.binary_pattern[:, numpy.newaxis, numpy.newaxis].astype(numpy.bool)
         width, height = self.device.get_resolution()
         nb_repetitions = (1, height, width)
         frames = numpy.tile(array, nb_repetitions)
