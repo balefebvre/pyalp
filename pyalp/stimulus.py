@@ -30,8 +30,9 @@ class FullFieldBinaryPattern(Stimulus):
 
     Parameters
     ----------
-    pathname: string, optional
-        Pathname of the file which contains the description of the binary pattern.
+    pattern: list or string, optional
+        Definition of the binary pattern either directly by a list of booleans or integers or indirectly by reference to
+        a .csv file which contains the description of the pattern.
     rate: float, optional
         Frame rate [Hz]. The default value is 1.0.
     nb_repetitions: integer, optional
@@ -43,11 +44,11 @@ class FullFieldBinaryPattern(Stimulus):
 
     """
 
-    def __init__(self, pathname="", rate=1.0, nb_repetitions=1, interactive=False):
+    def __init__(self, pattern=[True, False], rate=1.0, nb_repetitions=1, interactive=False):
 
         Stimulus.__init__(self)
 
-        self.pathname = pathname
+        self.pattern = pattern
         self.rate = rate
         self.nb_repetitions = nb_repetitions
         self.interactive = interactive
@@ -65,12 +66,7 @@ class FullFieldBinaryPattern(Stimulus):
         """TODO add docstring."""
 
         # Define the sequence of frames.
-        # sequence = None
-        # sequence = alp.sequence.BlackWhite()
-        binary_pattern = np.array([255, 0])  # TODO get binary patter from file.
-        sequence = alp.sequence.FullFieldBinaryPattern(binary_pattern, self.rate)
-        # TODO find the best sequence (black and white with look up table v.s. black and white linear sequence).
-        # TODO find the best way to define this sequence.
+        sequence = alp.sequence.FullFieldBinaryPattern(self.pattern, self.rate)
 
         if verbose:
             # Display available memory before allocation.

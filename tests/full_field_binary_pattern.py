@@ -5,7 +5,7 @@ import pyalp as alp
 dev = alp.device.allocate(verbose=True)
 
 # Define stimulus
-rate = 10.0e+3  # Hz
+rate = 10100.0  # Hz
 duration = 5.0  # s
 nb_repetitions = int(rate * duration)
 stim = alp.stimulus.FullFieldBinaryPattern(rate=rate, nb_repetitions=nb_repetitions)
