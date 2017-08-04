@@ -1,4 +1,3 @@
-import numpy as np
 import os
 
 import pyalp as alp
@@ -44,9 +43,12 @@ class FullFieldBinaryPattern(Stimulus):
 
     """
 
-    def __init__(self, pattern=[True, False], rate=1.0, nb_repetitions=1, interactive=False):
+    def __init__(self, pattern=None, rate=1.0, nb_repetitions=1, interactive=False):
 
         Stimulus.__init__(self)
+
+        if pattern is None:
+            pattern = [True, False]
 
         self.pattern = pattern
         self.rate = rate
@@ -108,8 +110,50 @@ class FullFieldBinaryPattern(Stimulus):
         return
 
 
+class Checkerboard(Stimulus):
+    """Checkerboard stimulus
+
+    Parameters
+    ----------
+    check_size: integer, optional
+        Check size [px]. The default value is 18.
+    nb_checks: integer, optional
+        Number of checks. The default value is 20.
+    rate: float, optional
+        Frame rate [Hz]. The default value is 30.0.
+    interactive: boolean, optional
+        The default values is False.
+
+    """
+    # TODO complete docstring.
+
+    def __init__(self, check_size=18, nb_checks=20, rate=30.0, interactive=False):
+
+        Stimulus.__init__(self)
+
+        self.check_size = check_size
+        self.nb_checks = nb_checks
+        self.rate = rate
+
+        if interactive:
+            self.prompt_input_arguments()
+
+    def prompt_input_arguments(self):
+        """TODO add docstring"""
+
+        raise NotImplementedError()
+
+    def display(self, device):
+        """TODO add docstring"""
+
+        # Define the sequence of frames.
+        sequence = alp.sequence.Checkerboard(self.check_size, self.nb_checks)
+
+        raise NotImplementedError()
+
+
 class Film(Stimulus):
-    """TODO add docstring...
+    """Film stimulus
 
     Parameters
     ----------
@@ -123,6 +167,7 @@ class Film(Stimulus):
         Specify if it should prompt the input parameters. The default value is True.
 
     """
+    # TODO complete docstring.
 
     dirname = os.path.join("E:", "BINVECS")
     # dirname = os.path.expanduser(os.path.join("~", ".pyalp", "films"))

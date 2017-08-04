@@ -378,30 +378,6 @@ class FullFieldBinaryPattern(Sequence):
 
         return frames
 
-# TODO delete...
-# class Sequence(object):
-#     """TODO add doc...
-#
-#     TODO complete...
-#     """
-#     def __init__(self, bit_planes=None, pic_num=None,
-#                  illuminate_time=ALP_DEFAULT, picture_time=ALP_DEFAULT,
-#                  synch_delay=ALP_DEFAULT, synch_pulse_width=ALP_DEFAULT,
-#                  trigger_in_delay=ALP_DEFAULT, infinite_loop=False,
-#                  pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
-#         assert bit_planes is not None, "Invalid bit_planes value: {}".format(bit_planes)
-#         self.bit_planes = bit_planes
-#         assert pic_num is not None, "Invalid pic_num values: {}".format(pic_num)
-#         self.pic_num = pic_num
-#         self.illuminate_time = illuminate_time
-#         self.picture_time = picture_time
-#         self.synch_delay = synch_delay
-#         self.synch_pulse_width = synch_pulse_width
-#         self.trigger_in_delay = trigger_in_delay
-#         self.infinite_loop = infinite_loop
-#         self.pic_offset = pic_offset # TODO check if it should be defined somewhere else...
-#         self.pic_load = pic_load # TODO check if it should be defined somewhere else...
-
 
 class Checkerboard(Sequence):
     """TODO add doc...
