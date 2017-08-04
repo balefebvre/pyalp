@@ -214,6 +214,9 @@ class Checkerboard(Stimulus):
         # 4. Repeat.
         for cycle_id in range(1, self.nb_cycles):
 
+            # TODO remove following line.
+            print("cycle id: {}".format(cycle_id))
+
             # a. Wait completion of 1st sequence.
             device.wait()
             # b. Free 1st sequence.
@@ -236,6 +239,12 @@ class Checkerboard(Stimulus):
             sequence_2.control_timing()
             sequence_2.load()
             sequence_2.start()
+
+        # 5. Clean up.
+        device.wait()
+        sequence_1.free()
+        device.wait()
+        sequence_2.free()
 
         return
 

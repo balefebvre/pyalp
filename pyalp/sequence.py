@@ -490,7 +490,7 @@ class CheckerboardBis(Sequence):
         self.nb_checks = nb_checks
         self.nb_frames = nb_frames
 
-        self.seed = 42
+        self.seed = self.sequence_id
         self.checkerboard_size = self.check_size * self.nb_checks
 
     def get_user_array(self):
