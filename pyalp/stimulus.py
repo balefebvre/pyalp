@@ -98,9 +98,6 @@ class FullFieldBinaryPattern(Stimulus):
         # Transmit the sequence of frames into memory.
         sequence.load()
 
-        # # Set up queue mode.
-        # device.control_projection(queue_mode=True)
-
         # Start the sequence of frames.
         sequence.start()
 
@@ -127,29 +124,120 @@ class Checkerboard(Stimulus):
     """
     # TODO complete docstring.
 
-    def __init__(self, check_size=18, nb_checks=20, rate=30.0, interactive=False):
+    def __init__(self, check_size=18, nb_checks=20, rate=30.0, duration=5.0, interactive=False):
 
         Stimulus.__init__(self)
 
         self.check_size = check_size
         self.nb_checks = nb_checks
         self.rate = rate
+        self.duration = duration
 
         if interactive:
             self.prompt_input_arguments()
+
+        self.nb_frames = int(self.rate * self.duration)
+        self.sequence_size = 200  # (i.e. number of frames)
+        self.nb_sequences = int(self.nb_frames / self.sequence_size)
+        self.nb_cycles = int(self.nb_sequences / 2)
+        # TODO manage remaining frames as a partial sequence.
 
     def prompt_input_arguments(self):
         """TODO add docstring"""
 
         raise NotImplementedError()
 
-    def display(self, device):
-        """TODO add docstring"""
+    def display(self, device, verbose=False):
+        """TODO add docstring
 
-        # Define the sequence of frames.
-        sequence = alp.sequence.Checkerboard(self.check_size, self.nb_checks)
+        Parameters
+        ----------
+        device: Device
+        verbose: boolean, optional
+            The default value is False.
 
-        raise NotImplementedError()
+        """
+        # TODO complete docstring.
+
+        # 1. Allocate 1st sequence of frames.
+        # Define 1st sequence of frames.
+        sequence_id_1 = 0
+        sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks, self.sequence_size)
+        # Display available memory before allocation of 1st sequence.
+        if verbose:
+            ans = device.inquire_available_memory()
+            print("Available memory before allocation of 1st sequence [number of binary pictures]: {}".format(ans))
+        # Allocate memory for 1st sequence of frames.
+        device.allocate(sequence_1)
+        # Display available memory after allocation of 1st sequence.
+        if verbose:
+            ans = device.inquire_available_memory()
+            print("Available memory after allocation of 1st sequence [number of binary pictures]: {}".format(ans))
+        # TODO check if the following two lines are necessary.
+        # # Control the number of repetitions of 1st sequence display.
+        # sequence_1.control_nb_repetitions(1)
+        # Control the timing properties of 1st sequence display.
+        sequence_1.control_timing()
+
+        # 2. Allocate 2nd sequence of frames.
+        # Define 2nd sequence of frames.
+        sequence_id_2 = 1
+        sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks, self.sequence_size)
+        # Display available memory before allocation of 2nd sequence.
+        if verbose:
+            ans = device.inquire_available_memory()
+            print("Available memory before allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
+        # Allocate memory for the 2nd sequence of frames.
+        device.allocate(sequence_2)
+        # Display available memory after allocation of 2nd sequence.
+        if verbose:
+            ans = device.inquire_available_memory()
+            print("Available memory after allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
+        # TODO check if the following two lines are necessary.
+        # # Control the number of repetitions of 2nd sequence display.
+        # sequence_2.control_nb_repetitions(1)
+        # Control the timing properties of 2nd sequence display.
+        sequence_2.control_timing()
+
+        # 3. Play on DMD.
+        # Set up queue mode.
+        device.control_projection(queue_mode=True)
+        # Transmit 1st sequence of frames into memory.
+        sequence_1.load()
+        # Start 1st sequence of frames.
+        sequence_1.start()
+        # Transmit 2nd sequence of frames into memory.
+        sequence_2.load()
+        # Start 2nd sequence of frames.
+        sequence_2.start()
+
+        # 4. Repeat.
+        for cycle_id in range(1, self.nb_cycles):
+
+            # a. Wait completion of 1st sequence.
+            device.wait()
+            # b. Free 1st sequence.
+            sequence_1.free()
+            # c. Reallocate 1st sequence.
+            sequence_id_1 = 2 * cycle_id + 0
+            sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks, self.sequence_size)
+            device.allocate(sequence_1)
+            sequence_1.control_timing()
+            sequence_1.load()
+            sequence_1.start()
+            # d. Wait completion of 2nd sequence.
+            device.wait()
+            # e. Free 2nd sequence.
+            sequence_2.free()
+            # f. Reallocate 2nd sequence of frames.
+            sequence_id_2 = 2 * cycle_id + 1
+            sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks, self.sequence_size)
+            device.allocate(sequence_2)
+            sequence_2.control_timing()
+            sequence_2.load()
+            sequence_2.start()
+
+        return
 
 
 class Film(Stimulus):
