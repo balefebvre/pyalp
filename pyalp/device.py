@@ -1,5 +1,6 @@
 import ctypes
 from ctypes import c_long, byref, cast
+import time
 
 from . import api
 from . import utils
@@ -525,3 +526,22 @@ class Device(object):
                 raise Exception("AlpProjInquireEx: {}".format(ret_val_))
         else:
             raise ValueError("Unknown inquire_type value {}".format(inquire_type))
+
+    def synchronize(self, sleep_duration=30.0e-3):
+        """TODO add docstring
+
+        More sophisticated synchronization method by supervision of sequence progress.
+
+        Parameter
+        ---------
+        sleep_duration: float
+            Sleep duration [s]. The default value is 30.0e-3.
+
+        """
+
+        projection_progress = self.inquire_projection('progress')
+        while projection_progress.nWaitingSequences >= 1 or projection_progress.SequenceId == 0:
+            projection_progress = self.inquire_projection('progress')
+            time.sleep(30.0e-3)
+
+        return

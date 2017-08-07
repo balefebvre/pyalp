@@ -478,12 +478,13 @@ class CheckerboardBis(Sequence):
     """
     # TODO complete docstring.
 
-    def __init__(self, sequence_id, check_size, nb_checks, nb_frames):
+    def __init__(self, sequence_id, check_size, nb_checks, nb_frames, rate):
 
-        bit_planes = 8
+        bit_planes = 1
         pic_num = nb_frames
+        picture_time = int(1.0e+6 / rate)
 
-        Sequence.__init__(self, bit_planes, pic_num)
+        Sequence.__init__(self, bit_planes, pic_num, picture_time=picture_time)
 
         self.sequence_id = sequence_id
         self.check_size = check_size
@@ -513,7 +514,12 @@ class CheckerboardBis(Sequence):
         x_max = x_min + self.checkerboard_size
         y_min = (height - self.checkerboard_size) // 2
         y_max = y_min + self.checkerboard_size
-        frames[:, y_min:y_max, x_min:x_max] = numpy.kron(data, numpy.ones((1, self.check_size, self.check_size)))
+        print("data.shape: {}".format(data.shape))
+        print("data.nbytes: {}".format(data.nbytes))
+        print("frames.shape: {}".format(frames.shape))
+        print("frames.nbytes: {}".format(frames.nbytes))
+        data = numpy.kron(data, numpy.ones((1, self.check_size, self.check_size)))
+        frames[:, y_min:y_max, x_min:x_max] = data
         # TODO check if the following two lines are necessary.
         # # Transpose frames
         # frames = numpy.transpose(frames)
