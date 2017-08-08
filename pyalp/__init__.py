@@ -1,6 +1,6 @@
 from .base import path, api
 
-from . import device, io, sequence, stimulus, protocol
+from . import device, io, sequence, stimulus, protocol, utils
 
 
 __all__ = [
@@ -11,4 +11,5 @@ __all__ = [
     'sequence',
     'stimulus',
     'protocol',
+    'utils',
 ]

@@ -8,7 +8,7 @@ from .base.constant import *
 from .base.type import *
 from .protocol import Protocol
 # from .sequence import Sequence
-from .stimulus import Stimulus
+from .stimulus.base import Stimulus
 
 
 def allocate(device_number=ALP_DEFAULT, verbose=False):
@@ -389,8 +389,17 @@ class Device(object):
         else:
             raise Exception("AlpSeqFree: {}".format(ret_val_))
 
-    def wait(self, infinite_loop=False):
-        """Wait sequence completion"""
+    def wait(self, infinite_loop=False, active=True):
+        """Wait sequence completion.
+
+        Parameters
+        ----------
+        infinite_loop: boolean, optional
+            The default value is False.
+        active: boolean, optional
+            Waiting mode: active or passive. Keyboard interruption is allowed under active mode only. The default value
+            is True.
+        """
         device_id_ = c_ulong(self.id)
         if infinite_loop:
             _ = input("Press Enter to stop projection...\n")
@@ -401,11 +410,17 @@ class Device(object):
             else:
                 raise Exception("AlpProjHalt: {}".format(ret_val_))
         else:
-            ret_val_ = api.AlpProjWait(device_id_)
-            if ret_val_ == ALP_OK:
-                return
+            if active:
+                projection_progress = self.inquire_projection('progress')
+                while not projection_progress.is_idle:
+                    time.sleep(30.0e-3)
+                    projection_progress = self.inquire_projection('progress')
             else:
-                raise Exception("AlpProjWait: {}".format(ret_val_))
+                ret_val_ = api.AlpProjWait(device_id_)
+                if ret_val_ == ALP_OK:
+                    return
+                else:
+                    raise Exception("AlpProjWait: {}".format(ret_val_))
 
     def wait_completion(self):
         """TODO add docstring."""
