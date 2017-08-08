@@ -19,7 +19,7 @@ duration = 5.0 * 60.0  # s  # duration
 dev = alp.device.allocate(verbose=True)
 
 # Define stimulus.
-stim = alp.stimulus.Checkerboard(check_size=check_size, nb_checks=nb_checks, rate=rate, duration=duration)
+stim = alp.stimulus.Checkerboard(check_size=check_size, nb_checks=nb_checks, rate=rate, duration=duration, verbose=True)
 
 # Print parameters.
 print("check size: {}".format(check_size))

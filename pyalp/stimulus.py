@@ -61,12 +61,23 @@ class FullFieldBinaryPattern(Stimulus):
             self.prompt_input_arguments()
 
     def prompt_input_arguments(self):
-        """TODO add docstring."""
+        """Prompt input arguments."""
+        # TODO complete docstring.
 
         raise NotImplementedError()
 
     def display(self, device, verbose=False):
-        """TODO add docstring."""
+        """Display stimulus.
+
+        Parameter
+        ---------
+        device: Device
+            ALP device.
+        verbose: boolean, optional
+            Verbosity mode. The default values is False.
+
+        """
+        # TODO complete docstring.
 
         # Define the sequence of frames.
         sequence = alp.sequence.FullFieldBinaryPattern(self.pattern, self.rate)
@@ -103,7 +114,7 @@ class FullFieldBinaryPattern(Stimulus):
         sequence.start()
 
         # Wait.
-        device.wait()  # TODO check.
+        device.wait()
 
         return
 
@@ -125,12 +136,14 @@ class Checkerboard(Stimulus):
         Number of frames per sequence. High numbers enable high frame rate but increase memory consumption. The default
         value is 250.
     interactive: boolean, optional
-        The default values is False.
+        The default value is False.
+    verbose: boolean, optional
+        The default value is False.
 
     """
-    # TODO complete docstring.
 
-    def __init__(self, check_size=18, nb_checks=20, rate=30.0, duration=5.0, sequence_size=250, interactive=False):
+    def __init__(self, check_size=18, nb_checks=20, rate=30.0, duration=5.0, sequence_size=250,
+                 interactive=False, verbose=False):
 
         Stimulus.__init__(self)
 
@@ -146,15 +159,82 @@ class Checkerboard(Stimulus):
         self.nb_frames = int(self.rate * self.duration)
         self.nb_sequences = int(self.nb_frames / self.sequence_size)
         self.nb_cycles = int(self.nb_sequences / 2)
+
+        if verbose:
+            self.print_settings()
+
         # TODO manage remaining frames as a partial sequence.
 
-    def prompt_input_arguments(self):
-        """TODO add docstring"""
+    def prompt_input_arguments(self, sep=""):
+        """Prompt input arguments."""
+        # TODO complete docstring.
 
-        raise NotImplementedError()
+        # Prompt check size.
+        prompt = "Enter the number of pixels to make one side of a check (e.g. {}): ".format(self.check_size)
+        callback = int
+        self.check_size = alp.utils.input(prompt, callback)
+
+        print(sep)
+
+        # Prompt number of checks.
+        prompt = "Enter the number of checks to make one side of the checkerboard (e.g. {}): ".format(self.nb_checks)
+        callback = int
+        self.nb_checks = alp.utils.input(prompt, callback)
+
+        print(sep)
+
+        # Prompt frame rate.
+        prompt = "Enter the frame rate (e.g. {}): ".format(self.rate)
+        callback = float
+        self.rate = alp.utils.input(prompt, callback)
+
+        print(sep)
+
+        # Prompt duration.
+        prompt = "Enter the duration [s] (e.g. {}): ".format(self.duration)
+        callback = float
+        self.duration = alp.utils.input(prompt, callback)
+
+        print(sep)
+
+        # Prompt advanced features.
+        prompt = "Advanced features (y/n): "
+        callback = lambda arg: arg == "y"
+        advanced = alp.utils.input(prompt, callback)
+
+        print(sep)
+
+        if advanced:
+
+            # Prompt sequence size.
+            prompt = "Enter the sequence size (e.g. {}): ".format(self.sequence_size)
+            callback = int
+            self.sequence_size = alp.utils.input(prompt, callback)
+
+            print(sep)
+
+        return
+
+    def print_settings(self):
+        """Print settings."""
+        # TODO complete docstring.
+
+        print("------------- Checkerboard stimulus --------------")
+        print("check size: {} px".format(self.check_size))
+        print("number of checks: {}".format(self.nb_checks))
+        print("rate: {} Hz".format(self.rate))
+        print("duration: {} s".format(self.duration))
+        print("sequence size: {}".format(self.sequence_size))
+        print("number of frames: {}".format(self.nb_frames))
+        print("number of sequences: {}".format(self.nb_sequences))
+        print("number of cycles: {}".format(self.nb_cycles))
+        print("--------------------------------------------------")
+        print("")
+
+        return
 
     def display(self, device, verbose=False):
-        """TODO add docstring
+        """Display stimulus.
 
         Parameters
         ----------
@@ -302,6 +382,7 @@ class Film(Stimulus):
 
     def prompt_input_arguments(self):
         """Prompt the input arguments."""
+        # TODO complete docstring.
 
         sep = ""
 
@@ -372,7 +453,15 @@ class Film(Stimulus):
         return
 
     def display(self, device):
-        """TODO add docstring."""
+        """Display stimulus.
+
+        Parameter
+        ---------
+        device: Device
+            ALP device.
+
+        """
+        # TODO complete docstring.
 
         # Read .vec file.
         frame_ids = alp.io.load_vec(self.vec_pathname)
