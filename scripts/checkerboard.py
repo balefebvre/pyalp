@@ -1,4 +1,4 @@
-"""Script to play a full-field binary pattern at a given frame rate and for a given duration"""
+"""Script to play a checkerboard at a given frame rate and for a given duration."""
 
 import pyalp as alp
 
