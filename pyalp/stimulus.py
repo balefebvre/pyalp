@@ -171,36 +171,31 @@ class Checkerboard(Stimulus):
 
         # Prompt check size.
         prompt = "Enter the number of pixels to make one side of a check (e.g. {}): ".format(self.check_size)
-        callback = int
-        self.check_size = alp.utils.input(prompt, callback)
+        self.check_size = alp.utils.input(prompt, int)
 
         print(sep)
 
         # Prompt number of checks.
         prompt = "Enter the number of checks to make one side of the checkerboard (e.g. {}): ".format(self.nb_checks)
-        callback = int
-        self.nb_checks = alp.utils.input(prompt, callback)
+        self.nb_checks = alp.utils.input(prompt, int)
 
         print(sep)
 
         # Prompt frame rate.
         prompt = "Enter the frame rate (e.g. {}): ".format(self.rate)
-        callback = float
-        self.rate = alp.utils.input(prompt, callback)
+        self.rate = alp.utils.input(prompt, float)
 
         print(sep)
 
         # Prompt duration.
         prompt = "Enter the duration [s] (e.g. {}): ".format(self.duration)
-        callback = float
-        self.duration = alp.utils.input(prompt, callback)
+        self.duration = alp.utils.input(prompt, float)
 
         print(sep)
 
         # Prompt advanced features.
         prompt = "Advanced features (y/n): "
-        callback = lambda arg: arg == "y"
-        advanced = alp.utils.input(prompt, callback)
+        advanced = alp.utils.input(prompt, lambda arg: arg == "y")
 
         print(sep)
 
@@ -208,8 +203,7 @@ class Checkerboard(Stimulus):
 
             # Prompt sequence size.
             prompt = "Enter the sequence size (e.g. {}): ".format(self.sequence_size)
-            callback = int
-            self.sequence_size = alp.utils.input(prompt, callback)
+            self.sequence_size = alp.utils.input(prompt, int)
 
             print(sep)
 
@@ -246,61 +240,76 @@ class Checkerboard(Stimulus):
         """
         # TODO complete docstring.
 
-        # 1. Allocate 1st sequence of frames.
-        # Define 1st sequence of frames.
-        sequence_id_1 = 0
-        sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
-                                                  self.sequence_size, self.rate)
-        # Display available memory before allocation of 1st sequence.
-        if verbose:
-            ans = device.inquire_available_memory()
-            print("Available memory before allocation of 1st sequence [number of binary pictures]: {}".format(ans))
-        # Allocate memory for 1st sequence of frames.
-        device.allocate(sequence_1)
-        # Display available memory after allocation of 1st sequence.
-        if verbose:
-            ans = device.inquire_available_memory()
-            print("Available memory after allocation of 1st sequence [number of binary pictures]: {}".format(ans))
-        # Control the bit depth of 1st sequence display.
-        sequence_1.control_bit_number(1)
-        # Control the dark phase property of the sequence display.
-        sequence_1.control_binary_mode('uninterrupted')
-        # Control the timing properties of 1st sequence display.
-        sequence_1.control_timing()
+        sequence_1 = None
+        sequence_2 = None
 
-        # 2. Allocate 2nd sequence of frames.
-        # Define 2nd sequence of frames.
-        sequence_id_2 = 1
-        sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
-                                                  self.sequence_size, self.rate)
-        # Display available memory before allocation of 2nd sequence.
-        if verbose:
-            ans = device.inquire_available_memory()
-            print("Available memory before allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
-        # Allocate memory for the 2nd sequence of frames.
-        device.allocate(sequence_2)
-        # Display available memory after allocation of 2nd sequence.
-        if verbose:
-            ans = device.inquire_available_memory()
-            print("Available memory after allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
-        # Control the bit depth of 2nd sequence display.
-        sequence_2.control_bit_number(1)
-        # Control the dark phase property of 2nd sequence display.
-        sequence_1.control_binary_mode('uninterrupted')
-        # Control the timing properties of 2nd sequence display.
-        sequence_2.control_timing()
+        if self.nb_frames > 0 * self.sequence_size:  # i.e. enough frames
+
+            # 1. Allocate 1st sequence of frames.
+            # Define 1st sequence of frames.
+            sequence_id_1 = 0
+            if self.nb_frames > 1 * self.sequence_size:
+                nb_frames = self.sequence_size
+            else:
+                nb_frames = self.nb_frames - 0 * self.sequence_size
+            sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
+                                                      nb_frames, self.rate)
+            # Display available memory before allocation of 1st sequence.
+            if verbose:
+                ans = device.inquire_available_memory()
+                print("Available memory before allocation of 1st sequence [number of binary pictures]: {}".format(ans))
+            # Allocate memory for 1st sequence of frames.
+            device.allocate(sequence_1)
+            # Display available memory after allocation of 1st sequence.
+            if verbose:
+                ans = device.inquire_available_memory()
+                print("Available memory after allocation of 1st sequence [number of binary pictures]: {}".format(ans))
+            # Control the bit depth of 1st sequence display.
+            sequence_1.control_bit_number(1)
+            # Control the dark phase property of the sequence display.
+            sequence_1.control_binary_mode('uninterrupted')
+            # Control the timing properties of 1st sequence display.
+            sequence_1.control_timing()
+
+        if self.nb_frames > 1 * self.sequence_size:  # i.e. enough frames
+
+            # 2. Allocate 2nd sequence of frames.
+            # Define 2nd sequence of frames.
+            sequence_id_2 = 1
+            if self.nb_frames > 2 * self.sequence_size:
+                nb_frames = self.sequence_size
+            else:
+                nb_frames = self.nb_frames - 1 * self.sequence_size
+            sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
+                                                      nb_frames, self.rate)
+            # Display available memory before allocation of 2nd sequence.
+            if verbose:
+                ans = device.inquire_available_memory()
+                print("Available memory before allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
+            # Allocate memory for the 2nd sequence of frames.
+            device.allocate(sequence_2)
+            # Display available memory after allocation of 2nd sequence.
+            if verbose:
+                ans = device.inquire_available_memory()
+                print("Available memory after allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
+            # Control the bit depth of 2nd sequence display.
+            sequence_2.control_bit_number(1)
+            # Control the dark phase property of 2nd sequence display.
+            sequence_2.control_binary_mode('uninterrupted')
+            # Control the timing properties of 2nd sequence display.
+            sequence_2.control_timing()
 
         # 3. Play on DMD.
         # Set up queue mode.
         device.control_projection(queue_mode=True)
-        # Transmit 1st sequence of frames into memory.
-        sequence_1.load()
-        # Start 1st sequence of frames.
-        sequence_1.start()
-        # Transmit 2nd sequence of frames into memory.
-        sequence_2.load()
-        # Start 2nd sequence of frames.
-        sequence_2.start()
+        # Transmit and start 1st sequence of frames into memory.
+        if self.nb_frames > 0 * self.sequence_size:  # i.e. enough frames
+            sequence_1.load()
+            sequence_1.start()
+        # Transmit and start 2nd sequence of frames into memory.
+        if self.nb_frames > 1 * self.sequence_size:  # i.e. enough frames
+            sequence_2.load()
+            sequence_2.start()
         # Force garbage collection.
         gc.collect()
 
@@ -313,8 +322,9 @@ class Checkerboard(Stimulus):
             sequence_1.free()
             # c. Reallocate 1st sequence.
             sequence_id_1 = 2 * cycle_id + 0
+            nb_frames = self.sequence_size
             sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
-                                                      self.sequence_size, self.rate)
+                                                      nb_frames, self.rate)
             device.allocate(sequence_1)
             sequence_1.control_bit_number(1)
             sequence_1.control_binary_mode('uninterrupted')
@@ -328,8 +338,53 @@ class Checkerboard(Stimulus):
             sequence_2.free()
             # f. Reallocate 2nd sequence of frames.
             sequence_id_2 = 2 * cycle_id + 1
+            nb_frames = self.sequence_size
             sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
-                                                      self.sequence_size, self.rate)
+                                                      nb_frames, self.rate)
+            device.allocate(sequence_2)
+            sequence_2.control_bit_number(1)
+            sequence_2.control_binary_mode('uninterrupted')
+            sequence_2.control_timing()
+            sequence_2.load()
+            sequence_2.start()
+            gc.collect()
+
+        if self.nb_frames > (self.nb_cycles * 2 + 0) * self.sequence_size:  # i.e. remaining frames
+
+            # a. Wait completion of 1st sequence.
+            device.synchronize()
+            # b. Free 1st sequence.
+            sequence_1.free()
+            # c. Reallocate 1st sequence.
+            sequence_id_1 = 2 * self.nb_cycles + 0
+            if self.nb_frames > (sequence_id_1 + 1) * self.sequence_size:
+                nb_frames = self.sequence_size
+            else:
+                nb_frames = self.nb_frames - sequence_id_1 * self.sequence_size
+            sequence_1 = alp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
+                                                      nb_frames, self.rate)
+            device.allocate(sequence_1)
+            sequence_1.control_bit_number(1)
+            sequence_1.control_binary_mode('uninterrupted')
+            sequence_1.control_timing()
+            sequence_1.load()
+            sequence_1.start()
+            gc.collect()
+
+        if self.nb_frames > (self.nb_cycles * 2 + 1) * self.sequence_size:  # i.e. remaining frames
+
+            # a. Wait completion of 2nd sequence.
+            device.synchronize()
+            # b. Free 2nd sequence.
+            sequence_2.free()
+            # c. Reallocate 2st sequence.
+            sequence_id_2 = 2 * self.nb_cycles + 1
+            if self.nb_frames > (sequence_id_2 + 1) * self.sequence_size:
+                nb_frames = self.sequence_size
+            else:
+                nb_frames = self.nb_frames - sequence_id_2 * self.sequence_size
+            sequence_2 = alp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
+                                                      nb_frames, self.rate)
             device.allocate(sequence_2)
             sequence_2.control_bit_number(1)
             sequence_2.control_binary_mode('uninterrupted')
@@ -339,10 +394,12 @@ class Checkerboard(Stimulus):
             gc.collect()
 
         # 5. Clean up.
-        device.synchronize()
-        sequence_1.free()
-        device.wait()
-        sequence_2.free()
+        try:
+            device.wait()
+            sequence_1.free()  # might raise an exception if sequence_1 have not be defined
+            sequence_2.free()  # might raise an exception if sequence_2 have not be defined
+        except NameError:
+            pass
 
         return
 

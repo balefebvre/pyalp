@@ -227,25 +227,27 @@ class Device(object):
 
     def display(self, element):
         """Display element"""
-        if isinstance(element, list):  # TODO create a Queue class...
-            queue = element
-            for sequence in queue:
-                sequence.display(self)
-                if sequence.is_finite():
-                    self.wait_completion()
-                else:
-                    self.wait_interruption()
-        elif isinstance(element, Protocol):
-            element.project(self)
-        # elif isinstance(element, Sequence):
-        #     sequence = element
-        #     sequence.display(self)
-        #     self.wait()
-        elif isinstance(element, Stimulus):
-            element.display(self)
-            # self.wait()
-        else:
-            raise NotImplementedError("pyalp.device.display")
+        try:
+            if isinstance(element, list):  # TODO create a Queue class...
+                queue = element
+                for sequence in queue:
+                    sequence.display(self)
+                    if sequence.is_finite():
+                        self.wait_completion()
+                    else:
+                        self.wait_interruption()
+            elif isinstance(element, Protocol):
+                element.project(self)
+            # elif isinstance(element, Sequence):
+            #     sequence = element
+            #     sequence.display(self)
+            #     self.wait()
+            elif isinstance(element, Stimulus):
+                element.display(self)
+            else:
+                raise NotImplementedError("pyalp.device.display")
+        except KeyboardInterrupt:
+            self.stop()
         return
 
     def allocate(self, sequence):
@@ -414,6 +416,16 @@ class Device(object):
         """Wait sequence interruption"""
         _ = input("Press Enter to stop projection...\n")
         device_id_ = c_ulong(self.id)
+        ret_val_ = api.AlpProjHalt(device_id_)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpProjHalt: {}".format(ret_val_))
+
+    def stop(self):
+        """Stop running sequence display."""
+
+        device_id_ = c_long(self.id)
         ret_val_ = api.AlpProjHalt(device_id_)
         if ret_val_ == ALP_OK:
             return
