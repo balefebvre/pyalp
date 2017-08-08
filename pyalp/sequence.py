@@ -514,10 +514,6 @@ class CheckerboardBis(Sequence):
         x_max = x_min + self.checkerboard_size
         y_min = (height - self.checkerboard_size) // 2
         y_max = y_min + self.checkerboard_size
-        print("data.shape: {}".format(data.shape))
-        print("data.nbytes: {}".format(data.nbytes))
-        print("frames.shape: {}".format(frames.shape))
-        print("frames.nbytes: {}".format(frames.nbytes))
         data = numpy.kron(data, numpy.ones((1, self.check_size, self.check_size)))
         frames[:, y_min:y_max, x_min:x_max] = data
         # TODO check if the following two lines are necessary.

@@ -12,7 +12,7 @@ __date__ = "2017-08-04"
 # Parameters.
 check_size = 18  # px  # check size
 nb_checks = 20  # number of checks
-rate = 30.0  # 40.0  # Hz  # frame rate
+rate = 50.0  # 40.0  # Hz  # frame rate
 duration = 5.0 * 60.0  # s  # duration
 
 # Allocate device.
