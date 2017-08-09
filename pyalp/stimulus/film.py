@@ -31,7 +31,7 @@ class Film(Stimulus):
     dirname = os.path.join("E:", "BINVECS")
     # dirname = os.path.expanduser(os.path.join("~", ".pyalp", "films"))  # TODO remove.
 
-    def __init__(self, bin_pathname=None, vec_pathname=None, rate=30.0, sequence_size=20,
+    def __init__(self, bin_pathname=None, vec_pathname=None, rate=30.0, sequence_size=200,
                  interactive=False, verbose=False):
 
         Stimulus.__init__(self)
