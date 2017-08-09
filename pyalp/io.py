@@ -25,5 +25,6 @@ def load_bin_header(pathname):
         header['height'] = int.from_bytes(fid.read(2), byteorder='little')
         header['nb_images'] = int.from_bytes(fid.read(2), byteorder='little')
         header['nb_bits'] = int.from_bytes(fid.read(2), byteorder='little')
+        header['size'] = 8
 
     return header

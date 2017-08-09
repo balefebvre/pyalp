@@ -38,7 +38,7 @@ class CheckerboardBis(Sequence):
         # Allocate frame
         width, height = self.device.get_resolution()
         shape = (self.nb_frames, height, width)
-        dtype = 'uint8'
+        dtype = numpy.uint8
         frames = numpy.zeros(shape, dtype=dtype)
         # Generate data
         size = (self.nb_frames, self.nb_checks, self.nb_checks)

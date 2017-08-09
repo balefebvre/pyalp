@@ -4,7 +4,7 @@ import time
 
 from . import api
 from . import utils
-from .base.constant import *
+# from .base.constant import *
 from .base.type import *
 from .protocol import Protocol
 # from .sequence import Sequence
@@ -569,6 +569,6 @@ class Device(object):
         projection_progress = self.inquire_projection('progress')
         while projection_progress.nWaitingSequences >= 1 or projection_progress.SequenceId == 0:
             projection_progress = self.inquire_projection('progress')
-            time.sleep(30.0e-3)
+            time.sleep(sleep_duration)
 
         return

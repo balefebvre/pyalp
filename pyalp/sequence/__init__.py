@@ -7,6 +7,7 @@ from .rectangle import Rectangle
 from .fullfield_binary_pattern import FullFieldBinaryPattern
 from .checkerboard import Checkerboard
 from .checkerboard_bis import CheckerboardBis
+from .film import Film
 
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     'FullFieldBinaryPattern',
     'Checkerboard',
     'CheckerboardBis',
+    'Film',
 ]

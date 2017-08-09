@@ -282,9 +282,9 @@ class Checkerboard(Stimulus):
         # 5. Clean up.
         try:
             device.wait()
-            sequence_1.free()  # might raise an exception if sequence_1 have not be defined
-            sequence_2.free()  # might raise an exception if sequence_2 have not be defined
-        except NameError:
+            sequence_1.free()
+            sequence_2.free()
+        except AttributeError:
             pass
 
         return
