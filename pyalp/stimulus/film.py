@@ -229,7 +229,8 @@ class Film(Stimulus):
             sequence_2.start()
             gc.collect()
 
-        if self.nb_frames > (self.nb_cycles * 2 + 0) * self.sequence_size:  # i.e. remaining frames
+        if self.nb_cycles > 0 and self.nb_frames > (self.nb_cycles * 2 + 0) * self.sequence_size:
+            # i.e. remaining frames
 
             # a. Wait completion of 1st sequence.
             device.synchronize()
@@ -246,7 +247,8 @@ class Film(Stimulus):
             sequence_1.start()
             gc.collect()
 
-        if self.nb_frames > (self.nb_cycles * 2 + 1) * self.sequence_size:  # i.e. remaining frames
+        if self.nb_cycles > 0 and self.nb_frames > (self.nb_cycles * 2 + 1) * self.sequence_size:
+            # i.e. remaining frames
 
             # a. Wait completion of 2nd sequence.
             device.synchronize()

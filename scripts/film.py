@@ -14,7 +14,7 @@ __date__ = "2017-08-08"
 # Parameters.
 bin_pathname = os.path.join("data", "rectangle_f60_a2.30.bin")
 vec_pathname = os.path.join("data", "rectangle_f60_a2.30.vec")
-rate = 40.0  # frame rate [Hz].
+rate = 60.0  # frame rate [Hz].
 
 # Check whether files exist.
 assert os.path.isfile(bin_pathname)
