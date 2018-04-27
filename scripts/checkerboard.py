@@ -10,8 +10,8 @@ __date__ = "2017-08-04"
 
 
 # Parameters.
-check_size = 18  # px  # check size
-nb_checks = 20  # number of checks
+check_size = 30  # px  # check size
+nb_checks = 30  # number of checks
 rate = 40.0  # Hz  # frame rate
 duration = 45.0 * 60.0  # s  # duration
 # sequence_size = 250  # sequence size

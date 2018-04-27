@@ -27,8 +27,12 @@ class Device(object):
 
     def __init__(self, device_number):
         """Allocate an ALP hardware system (board set)"""
-        # Save input parameter.
+
+        # Save input argument.
         self.nb = device_number
+        # Define attribute.
+        self.id = None
+        self._is_allocated = False
         # Allocate device.
         device_number_ = c_long(device_number)
         init_flag_ = c_long(ALP_DEFAULT)
@@ -36,21 +40,97 @@ class Device(object):
         device_id_ptr_ = byref(device_id_)
         ret_val_ = api.AlpDevAlloc(device_number_, init_flag_, device_id_ptr_)
         # Check returned value.
-        if ret_val_ == ALP_OK:
-            self.id = device_id_.value
-        else:
+        if ret_val_ != ALP_OK:
+            if ret_val_ == ALP_ADDR_INVALID:
+                print("ALP_ADDR_INVALID")
+            elif ret_val_ == ALP_NOT_ONLINE:  # i.e. 1001
+                print("ALP_NOT_ONLINE")
+            elif ret_val_ == ALP_NOT_READY:
+                print("ALP_NOT_READY")
+            elif ret_val_ == ALP_ERROR_INIT:  # i.e. 1010
+                print("ALP_ERROR_INIT")
+                # self.id = device_id_.value
+                self.id = 0
+                self._is_allocated = True
+                self.deallocate()
+            elif ret_val_ == ALP_LOADER_VERSION:  # i.e. 1014
+                print("ALP_LOADER_VERSION")
+            elif ret_val_ == ALP_ERROR_COMM:  # i.e. 1011
+                print("ALP_ERROR_COMM")
+                # TODO after this, I can not allocate the device again.
+                # TODO it seems that I need to clean something.
+                print("Communication error (id: {})".format(device_id_.value))
+            elif ret_val_ == ALP_DEVICE_REMOVED:  # i.e. 1012
+                print("ALP_DEVICE_REMOVED")
+                # self.id = device_id_.value
+                self.id = 0
+                print("Reconnection (id: {})".format(self.id))
+                self.reconnect()
+                # TODO show up after a bunch of ALP_ERROR_COMM.
+                # TODO or is the first error raised for successive allocations.
             raise Exception("AlpDevAlloc: {}".format(ret_val_))
+            # NOTES successive allocations raised
+            #   2018 04 26
+            #     (OK)2 -> (1011)+ -> 1012 -> 1011 -> (1001)2 -> ...
+            #     (OK)4 -> 1012 -> 1011 -> (1001)3 -> ...
+            #     OK -> 1012 -> 1011 -> (1001)3 -> ...
+            #     (OK)2 -> 1012 -> (1001)4 ...
+            #     (OK)2 -> (1011)2 -> (1001)4 ...
+            #     OK -> 1011 -> (1001)4 -> ...
+            #     (1011)2 -> 1010 ...
+            #     OK -> 1012 -> 1011 -> (1001)5 ...
+            #     It seems that the duration between to consecutive allocation needs to be greater than a fixed value.
+        # Update attributes.
+        self.id = device_id_.value
+        self._is_allocated = True
+
+        time.sleep(0.5)  # TODO remove this line once 'time.sleep' are added to all the other methods.
 
     def __del__(self):
         """Deallocate the ALP hardware system (board set)"""
+
+        if self._is_allocated:
+            # Stop device.  # TODO add condition (only if not in idle wait state).
+            time.sleep(0.5)  # TODO move line into 'stop'.
+            self.stop()
+            # Free device.
+            self.deallocate()
+
+        return
+
+    def reconnect(self):
+        """Reconnect the ALP hardware system (board set)."""
+
+        # TODO add comment or remove.
+        time.sleep(0.5)
+        # Reconnect device.
+        device_id = c_ulong(self.id)
+        control_type = c_long(ALP_USB_CONNECTION)
+        control_value = c_long(ALP_DEFAULT)
+        ret_val = api.AlpDevControl(device_id, control_type, control_value)
+        # Check returned value.
+        if ret_val != ALP_OK:
+            raise Exception("AlpDevControl: {}".format(ret_val))
+        # Update attribute.
+        self._is_allocated = True
+
+        return
+
+    def deallocate(self):
+        """Deallocate the ALP hardware system (board set)."""
+
+        # TODO add comment or remove.
+        time.sleep(0.5)
         # Deallocate device.
         device_id_ = c_ulong(self.id)
         ret_val_ = api.AlpDevFree(device_id_)
         # Check returned value.
-        if ret_val_ == ALP_OK:
-            return
-        else:
+        if ret_val_ != ALP_OK:
             raise Exception("AlpDevFree: {}".format(ret_val_))
+        # Update attributes.
+        self._is_allocated = False
+
+        return
 
     def get_id(self):
         """Get DMD identifier"""
@@ -217,6 +297,8 @@ class Device(object):
         settings = self.inquire_settings(human_readable=True)
 
         print("")
+        print("------------------ DMD attribute -----------------")
+        print("id: {}".format(self.id))
         print("------------------ DMD settings ------------------")
         for setting_key, setting_value in settings.items():
             print("{}: {}".format(setting_key, setting_value))
@@ -442,10 +524,10 @@ class Device(object):
 
         device_id_ = c_long(self.id)
         ret_val_ = api.AlpProjHalt(device_id_)
-        if ret_val_ == ALP_OK:
-            return
-        else:
+        if ret_val_ != ALP_OK:
             raise Exception("AlpProjHalt: {}".format(ret_val_))
+
+        return
 
     @staticmethod
     def invert_projection():
