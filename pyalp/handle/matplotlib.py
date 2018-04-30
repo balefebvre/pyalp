@@ -1,39 +1,20 @@
-import abc
 import numpy as np
 
-from .device_bis import MatplotlibDevice
-
-
-def handle(mock=False, device_number=0):
-    # TODO add docstring.
-
-    if mock:
-        handle_ = MatplotlibHandle(device_number=device_number)
-    else:
-        handle_ = ALPHandle(device_number=device_number)
-
-    return handle_
-
-
-class Handle(metaclass=abc.ABCMeta):
-    # TODO add docstring.
-
-    @abc.abstractmethod
-    def __init__(self):
-
-        pass
-
-    @abc.abstractmethod
-    def release(self):
-
-        raise NotImplementedError()
+from .base import Handle
+from ..device_bis import MatplotlibDevice
 
 
 class MatplotlibHandle(Handle):
-    # TODO add docstring.
+    """Matplotlib handle."""
 
     def __init__(self, device_number=0):
-        # TODO add docstring.
+        """Initialize a Matplotlib handle.
+
+        Argument:
+            device_number: integer (optional)
+                Specifies the device to be used (i.e. serial number).
+                The default value is 0.
+        """
 
         super().__init__()
 
@@ -46,7 +27,7 @@ class MatplotlibHandle(Handle):
         return
 
     def release(self):
-        # TODO add docstring.
+        """Release Matplotlib handle."""
 
         if self._is_active:
             self._device.halt()  # TODO execute line if necessary only.
@@ -121,21 +102,3 @@ class MatplotlibHandle(Handle):
             pass
 
         print("Not implemented...")
-
-
-class ALPHandle(Handle):
-    # TODO add docstring.
-
-    def __init__(self, device_number=0):
-        # TODO add docstring.
-
-        super().__init__()
-
-        self._device_number = device_number
-
-        # TODO allocate device.
-
-    def release(self):
-        # TODO add docstring.
-
-        raise NotImplementedError()
