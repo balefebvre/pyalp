@@ -1,10 +1,10 @@
 import numpy as np
 
-from .base import Handle
-from ..device_bis import MatplotlibDevice
+from .base import Handle as BaseHandle
+from ..device_bis.matplotlib import Device
 
 
-class MatplotlibHandle(Handle):
+class Handle(BaseHandle):
     """Matplotlib handle."""
 
     def __init__(self, device_number=0):
@@ -18,7 +18,7 @@ class MatplotlibHandle(Handle):
 
         super().__init__()
 
-        self._device = MatplotlibDevice()
+        self._device = Device()
         self._device.turn_on()
         self._device.allocate(device_number)
 

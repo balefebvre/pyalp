@@ -1,25 +1,40 @@
-from multiprocessing import Process, Event
+from multiprocessing import Process, Pipe, Event
+from multiprocessing.sharedctypes import RawArray
 from queue import Empty
-from signal import SIG_IGN, SIGINT, getsignal, signal
+from signal import getsignal, signal, SIG_IGN, SIGINT
+
+from .base import DMD as BaseDMD
+# from ..module import MatplotlibModule  # TODO remove line.
+# from ..dmd import MatplotlibDMD  # TODO remove line.
+from ..controller.matplotlib import Controller
 
 
-class MatplotlibModule(Process):
-    # TODO add docstring.
+class DMD(Process, BaseDMD):
+    """Matplotlib DMD."""
 
-    def __init__(self, usb_connection, bus_connection, memory):
-        # TODO add docstring.
+    def __init__(self, connection):
+        """Initialize Matplotlib DMD.
+
+        Argument:
+            connection: multiprocessing.Connection
+        """
 
         super().__init__()
 
-        self._usb_connection = usb_connection
-        self._bus_connection = bus_connection
+        connection_1, connection_2 = Pipe()
+        memory = RawArray('B', 100000000)  # unsigned char
+
+        self._usb_connection = connection
+        self._bus_connection = connection_1
         self._memory = memory
-        self._is_allocated = Event()
+        self._controller = Controller(connection_2, memory)
+        # self._module = MatplotlibModule(usb_connection_2, bus_connection_1, memory)  # TODO remove line.
+        # self._dmd = MatplotlibDMD(bus_connection_2, memory)  # TODO remove line.
 
         self._dmd_type = '1080P_095A'
         self._width = 1920
         self._height = 1080
-
+        self._is_allocated = Event()
         self._sequences = {}
 
         return
@@ -56,6 +71,8 @@ class MatplotlibModule(Process):
 
         # Restore default signal handling for parent process.
         signal(SIGINT, sigint_handler)
+
+        self._controller.start()
 
         return
 

@@ -3,21 +3,26 @@ import numpy as np
 
 from multiprocessing import Process, Event
 from queue import Empty
-from signal import SIG_IGN, SIGINT, getsignal, signal
+from signal import getsignal, signal, SIG_IGN, SIGINT
 from tkinter import TclError
 
+from .base import Controller as BaseController
 
-class MatplotlibDMD(Process):
-    # TODO add docstring.
 
-    def __init__(self, bus_connection, memory):
-        # TODO add docstring.
+class Controller(Process, BaseController):
+    """Matplotlib controller."""
+
+    def __init__(self, connection, memory):
+        """Initialize a Matplotlib controller.
+
+        Arguments:
+            connection: multiprocessing.Connection
+        """
 
         super().__init__()
 
-        self._bus_connection = bus_connection
+        self._bus_connection = connection
         self._memory = memory
-        self._is_allocated = Event()
 
         self._height = 1080
         self._width = 1920
@@ -25,6 +30,7 @@ class MatplotlibDMD(Process):
         self._cmap = 'gray'  # or 'binary'
         self._image = None
         self._figure = None
+        self._is_allocated = Event()
 
         return
 

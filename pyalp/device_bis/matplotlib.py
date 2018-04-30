@@ -1,33 +1,41 @@
 from multiprocessing import Pipe
-from multiprocessing.sharedctypes import RawArray
+# from multiprocessing.sharedctypes import RawArray
 from queue import Empty
 
-from .module import MatplotlibModule
-from .dmd import MatplotlibDMD
+from .base import Device as BaseDevice
+# from ..module import MatplotlibModule
+# from ..dmd import MatplotlibDMD
+from .dmd.matplotlib import DMD
 
 
-class MatplotlibDevice(object):
-    # TODO add docstring.
+class Device(BaseDevice):
+    """Matplotlib device."""
 
     def __init__(self):
-        # TODO add docstring.
+        """Initialize a Matplotlib device."""
 
-        usb_connection_1, usb_connection_2 = Pipe()
-        bus_connection_1, bus_connection_2 = Pipe()
-        memory = RawArray('B', 100000000)  # unsigned char
+        # usb_connection_1, usb_connection_2 = Pipe()
+        # bus_connection_1, bus_connection_2 = Pipe()
+        # memory = RawArray('B', 100000000)  # unsigned char
+        #
+        # self._device_number = None
+        # self._usb_connection = usb_connection_1
+        # self._module = MatplotlibModule(usb_connection_2, bus_connection_1, memory)
+        # self._dmd = MatplotlibDMD(bus_connection_2, memory)
 
-        self._device_number = None
-        self._usb_connection = usb_connection_1
-        self._module = MatplotlibModule(usb_connection_2, bus_connection_1, memory)
-        self._dmd = MatplotlibDMD(bus_connection_2, memory)
+        # TODO replace by the previous lines by the following ones.
+
+        connection_1, connection_2 = Pipe()
+
+        self._usb_connection = connection_1
+        self._dmd = DMD(connection_2)
 
         return
 
     def turn_on(self):
         # TODO add docstring.
 
-        # Spawn child processes.
-        self._module.start()
+        # self._module.start()  # TODO remove line.
         self._dmd.start()
 
         return
@@ -35,7 +43,7 @@ class MatplotlibDevice(object):
     def turn_off(self):
         # TODO add docstring.
 
-        self._module.join()
+        # self._module.join()  # TODO remove line.
         self._dmd.join()
 
         return

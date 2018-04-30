@@ -14,11 +14,10 @@ def handle(mock=False, device_number=0):
     """
 
     if mock:
-        from .matplotlib import MatplotlibHandle
-        handle_ = MatplotlibHandle(device_number=device_number)
+        from .matplotlib import Handle
     else:
-        from .alp import ALPHandle
-        handle_ = ALPHandle(device_number=device_number)
+        from .alp import Handle
+    handle_ = Handle(device_number=device_number)
 
     return handle_
 

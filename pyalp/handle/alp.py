@@ -1,9 +1,9 @@
-from .base import Handle
-from ..device_bis import ALPDevice
+from .base import Handle as BaseHandle
+from ..device_bis.alp import Device
 
 
-class ALPHandle(Handle):
-    """ALPHandle"""
+class Handle(BaseHandle):
+    """ALP handle"""
 
     def __init__(self, device_number=0):
         """Initialize an ALP handle.
@@ -16,7 +16,7 @@ class ALPHandle(Handle):
 
         super().__init__()
 
-        self._device = ALPDevice()
+        self._device = Device()
         # self._device.turn_on()  # TODO remove line.
         self._device.allocate(device_number)
 
