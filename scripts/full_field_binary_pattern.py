@@ -20,7 +20,7 @@ rate = 1.0e+3  # Hz  # frame rate
 duration = 5.0  # s  # duration
 
 # Allocate device.
-dev = alp.device.allocate(verbose=True)
+dev = alp.device.allocate_sequence(verbose=True)
 
 # Define stimulus.
 nb_repetitions = int(rate * duration)

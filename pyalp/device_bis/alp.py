@@ -16,25 +16,48 @@ class Device(BaseDevice):
     def __init__(self):
         """Initialize an ALP device."""
 
-        # TODO retrieve the API.
-        # TODO   how to retrieve the API?
+        # Retrieve the API.
         alp_path = os.environ['ALP_PATH']
         self._api = cdll.LoadLibrary(alp_path)
-        device_number = ALP_DEFAULT
 
-        # Save input argument.
-        self.nb = device_number
         # Define attribute.
+        self.nb = None
         self.id = None
         self._is_allocated = False
-        # Allocate device.
+
+        return
+
+    def __del__(self):
+        """Deallocate the ALP hardware system (board set)"""
+
+        if self._is_allocated:
+            # Stop device.  # TODO add condition (only if not in idle wait state).
+            time.sleep(0.5)  # TODO move line into 'stop'.
+            self.stop()
+            # Free device.
+            self.deallocate()
+
+        return
+
+    def allocate(self, device_number=0):
+        """Allocate ALP device.
+
+        Argument:
+            device_number: integer (optional)
+                The default value is 0.
+        """
+
+        # Update attributes.
+        self.nb = device_number
+        # Prepare arguments.
         device_number_ = c_long(device_number)
         init_flag_ = c_long(ALP_DEFAULT)
         device_id_ = c_ulong(ALP_DEFAULT)
         device_id_ptr_ = byref(device_id_)
+        # Call function.
         ret_val_ = self._api.AlpDevAlloc(device_number_, init_flag_, device_id_ptr_)
-        # Check returned value.
-        if ret_val_ != ALP_OK:
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:  # TODO raise appropriate errors.
             if ret_val_ == ALP_ADDR_INVALID:
                 print("ALP_ADDR_INVALID")
             elif ret_val_ == ALP_NOT_ONLINE:  # i.e. 1001
@@ -46,7 +69,7 @@ class Device(BaseDevice):
                 # self.id = device_id_.value
                 self.id = 0
                 self._is_allocated = True
-                self.deallocate()
+                self.free()
             elif ret_val_ == ALP_LOADER_VERSION:  # i.e. 1014
                 print("ALP_LOADER_VERSION")
             elif ret_val_ == ALP_ERROR_COMM:  # i.e. 1011
@@ -74,21 +97,157 @@ class Device(BaseDevice):
             #     (1011)2 -> 1010 ...
             #     OK -> 1012 -> 1011 -> (1001)5 ...
             #     It seems that the duration between to consecutive allocation needs to be greater than a fixed value.
+        # Prepare result.
+        device_id = device_id_.value
         # Update attributes.
-        self.id = device_id_.value
+        self.id = device_id
         self._is_allocated = True
 
-        time.sleep(0.5)  # TODO remove this line once 'time.sleep' are added to all the other methods.
+        return device_id
 
-    def __del__(self):
-        """Deallocate the ALP hardware system (board set)"""
+    def control(self, control_type, control_value):
+        """Control a parameter setting on the ALP device.
 
-        if self._is_allocated:
-            # Stop device.  # TODO add condition (only if not in idle wait state).
-            time.sleep(0.5)  # TODO move line into 'stop'.
-            self.stop()
-            # Free device.
-            self.deallocate()
+        Arguments:
+            control_type
+            control_value
+        """
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        control_type_ = c_long(control_type)
+        control_value_ = c_long(control_value)
+        # Call function.
+        ret_val_ = self._api.AlpDevControl(device_id_, control_type_, control_value_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    def inquire(self, inquire_type):
+        """Inquire a parameter setting on the ALP device."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        inquire_type_ = c_ulong(inquire_type)
+        user_var_ = c_ulong(ALP_DEFAULT)
+        user_var_ptr_ = byref(user_var_)
+        # Call function.
+        ret_val_ = self._api.AlpDevInquire(device_id_, inquire_type_, user_var_ptr_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+        # Prepare result.
+        user_var = user_var_.value
+
+        return user_var
+
+    def halt(self):
+        """Put the ALP device in an idle state."""
+
+        # Prepare argument.
+        device_id_ = c_ulong(self.id)
+        # Call function.
+        ret_val_ = self._api.AlpDevHalt(device_id_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    def free(self):
+        """Deallocate the ALP device."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        # Call function.
+        ret_val_ = self._api.AlpDevFree(device_id_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+        # Update attribute.
+        self._is_allocated = False
+
+        return
+
+    ####################################################################################################################
+
+    # # TODO remove the following lines.
+    # def control_sequence(self, sequence):
+    #     """Control sequence"""
+    #     DeviceId = c_ulong(self.id)
+    #     SequenceId = c_ulong(sequence.id)
+    #     if sequence.n_repetitions is None:
+    #         pass
+    #     else:
+    #         ControlType = c_long(ALP_SEQ_REPEAT)
+    #         ControlValue = c_long(sequence.n_repetitions)
+    #         ret_val = self._api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
+    #         if ret_val == ALP_OK:
+    #             pass
+    #         else:
+    #             raise Exception("AlpSeqControl: {}".format(ret_val))
+    #     # TODO add other controls...
+    #     return
+
+    def control_sequence(self, sequence, control_type, control_value):
+        """Control sequence."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        control_type_ = c_long(control_type)
+        control_value_ = c_long(control_value)
+        # Call function.
+        ret_val_ = self._api.AlpSeqControl(device_id_, sequence_id_, control_type_, control_value_)
+        # Prepare result.
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    def control_repetitions(self, sequence, nb_repetitions):
+        """Control sequence repetitions."""
+
+        self.control_sequence(sequence, ALP_SEQ_REPEAT, nb_repetitions)
+
+        return
+
+    def control_bit_number(self, sequence, bit_number):
+        """Control sequence bit number."""
+
+        self.control_sequence(sequence, ALP_BITNUM, bit_number)
+
+        return
+
+    def control_binary_mode(self, sequence, binary_mode):
+        """Control sequence binary mode."""
+
+        if binary_mode is 'normal':
+            self.control_sequence(sequence, ALP_BIN_MODE, ALP_BIN_NORMAL)
+        elif binary_mode is 'uninterrupted':
+            self.control_sequence(sequence, ALP_BIN_MODE, ALP_BIN_UNINTERRUPTED)
+        else:
+            raise NotImplementedError()
+
+        return
+
+    def control_timing(self, sequence):
+        """Set sequence timing."""
+
+        # TODO avoid set timing if possible (i.e. only default values)...
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        illuminate_time_ = c_long(sequence.illuminate_time)
+        picture_time_ = c_long(sequence.picture_time)
+        synch_delay_ = c_long(sequence.synch_delay)
+        synch_pulse_width_ = c_long(sequence.synch_pulse_width)
+        trigger_in_delay_ = c_long(sequence.trigger_in_delay)
+        ret_val_ = self._api.AlpSeqTiming(device_id_, sequence_id_, illuminate_time_, picture_time_,
+                                          synch_delay_, synch_pulse_width_, trigger_in_delay_)
+        if ret_val_ != ALP_OK:
+            raise Exception("AlpSeqTiming: {}".format(ret_val_))
 
         return
 
@@ -130,19 +289,6 @@ class Device(BaseDevice):
         """Get DMD identifier"""
         # Return DMD identifier
         return self.id
-
-    def inquire(self, inquire_type):
-        """Inquire a parameter setting og the ALP device"""
-        device_id_ = c_ulong(self.id)
-        inquire_type_ = c_ulong(inquire_type)
-        user_var_ = c_ulong(ALP_DEFAULT)
-        user_var_ptr_ = byref(user_var_)
-        ret_val_ = self._api.AlpDevInquire(device_id_, inquire_type_, user_var_ptr_)
-        if ret_val_ == ALP_OK:
-            ret_val_ = user_var_.value
-            return ret_val_
-        else:
-            raise Exception("AlpDevInquire: {}".format(ret_val_))
 
     def inquire_dmd_type(self, human_readable=False):
         """Inquire DMD type"""
@@ -326,7 +472,7 @@ class Device(BaseDevice):
             self.stop()
         return
 
-    def allocate(self, sequence):
+    def allocate_sequence(self, sequence):
         """Allocate sequence"""
         device_id_ = c_ulong(self.id)
         bit_planes_ = c_long(sequence.bit_planes)
@@ -354,71 +500,6 @@ class Device(BaseDevice):
             return sequence_id
         else:
             raise Exception("AlpSeqAlloc: {}".format(ret_val_))
-
-    # def control(self, sequence):
-    #     """Control sequence"""
-    #     DeviceId = c_ulong(self.id)
-    #     SequenceId = c_ulong(sequence.id)
-    #     if sequence.n_repetitions is None:
-    #         pass
-    #     else:
-    #         ControlType = c_long(ALP_SEQ_REPEAT)
-    #         ControlValue = c_long(sequence.n_repetitions)
-    #         ret_val = self._api.AlpSeqControl(DeviceId, SequenceId, ControlType, ControlValue)
-    #         if ret_val == ALP_OK:
-    #             pass
-    #         else:
-    #             raise Exception("AlpSeqControl: {}".format(ret_val))
-    #     # TODO add other controls...
-    #     return
-
-    def control(self, sequence, control_type, control_value):
-        """Control sequence"""
-        device_id_ = c_ulong(self.id)
-        sequence_id_ = c_ulong(sequence.id)
-        control_type_ = c_long(control_type)
-        control_value_ = c_long(control_value)
-        ret_val_ = self._api.AlpSeqControl(device_id_, sequence_id_, control_type_, control_value_)
-        if ret_val_ == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqControl: {}".format(ret_val_))
-
-    def control_repetitions(self, sequence, nb_repetitions):
-        """Control sequence repetitions"""
-        self.control(sequence, ALP_SEQ_REPEAT, nb_repetitions)
-        return
-
-    def control_bit_number(self, sequence, bit_number):
-        """Control sequence bit number"""
-        self.control(sequence, ALP_BITNUM, bit_number)
-        return
-
-    def control_binary_mode(self, sequence, binary_mode):
-        """Control sequence binary mode"""
-        if binary_mode is 'normal':
-            self.control(sequence, ALP_BIN_MODE, ALP_BIN_NORMAL)
-        elif binary_mode is 'uninterrupted':
-            self.control(sequence, ALP_BIN_MODE, ALP_BIN_UNINTERRUPTED)
-        else:
-            raise NotImplementedError()
-
-    def control_timing(self, sequence):
-        """Set sequence timing"""
-        # TODO avoid set timing if possible (i.e. only default values)...
-        device_id_ = c_ulong(self.id)
-        sequence_id_ = c_ulong(sequence.id)
-        illuminate_time_ = c_long(sequence.illuminate_time)
-        picture_time_ = c_long(sequence.picture_time)
-        synch_delay_ = c_long(sequence.synch_delay)
-        synch_pulse_width_ = c_long(sequence.synch_pulse_width)
-        trigger_in_delay_ = c_long(sequence.trigger_in_delay)
-        ret_val_ = self._api.AlpSeqTiming(device_id_, sequence_id_, illuminate_time_, picture_time_,
-                                          synch_delay_, synch_pulse_width_, trigger_in_delay_)
-        if ret_val_ == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqTiming: {}".format(ret_val_))
 
     def put(self, sequence):  # sequence_id, user_array, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
         """Put sequence"""
@@ -455,8 +536,8 @@ class Device(BaseDevice):
             else:
                 raise Exception("AlpProjStart: {}".format(ret_val_))
 
-    def free(self, sequence):
-        """Free sequence"""
+    def free_sequence(self, sequence):
+        """Free sequence."""
         device_id_ = c_ulong(self.id)
         sequence_id = c_ulong(sequence.id)
         ret_val_ = self._api.AlpSeqFree(device_id_, sequence_id)

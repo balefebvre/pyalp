@@ -40,7 +40,7 @@ class White(Protocol):
         device.control_projection(inversion=True)
         sequence = alp.sequence.White()
         # Set up sequence
-        device.allocate(sequence)
+        device.allocate_sequence(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO check if timing management is correct...
@@ -55,7 +55,7 @@ class White(Protocol):
         # Wait sequence end
         device.wait(infinite_loop=self.infinite_loop)
         # Clean sequence
-        device.free(sequence)
+        device.free_sequence(sequence)
         return
 
 
@@ -77,7 +77,7 @@ class Black(Protocol):
         device.control_projection(inversion=True)
         sequence = alp.sequence.Black()
         # Set up sequence
-        device.allocate(sequence)
+        device.allocate_sequence(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO check if timing management is correct...
@@ -92,7 +92,7 @@ class Black(Protocol):
         # Wait sequence end
         device.wait(infinite_loop=self.infinite_loop)
         # Clean sequence
-        device.free(sequence)
+        device.free_sequence(sequence)
         return
 
 
@@ -114,7 +114,7 @@ class BlackWhite(Protocol):
         device.control_projection(inversion=True)
         sequence = alp.sequence.BlackWhite()
         # Set up sequence
-        device.allocate(sequence)
+        device.allocate_sequence(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO manage timing...
@@ -125,7 +125,7 @@ class BlackWhite(Protocol):
         # Wait sequence end
         device.wait(infinite_loop=self.infinite_loop)
         # Clean sequence
-        device.free(sequence)
+        device.free_sequence(sequence)
         return
 
 
@@ -169,13 +169,13 @@ class Checkerboard(Protocol):
         sequence_1 = alp.sequence.Checkerboard(seed=42)
         sequence_2 = alp.sequence.Checkerboard(seed=None)
         # Setup first sequence
-        device.allocate(sequence_1)
+        device.allocate_sequence(sequence_1)
         # TODO manage control...
         # device.control(sequence_1)
         # TODO manage timing...
         # device.timing(sequence_1)
         # Setup second sequence
-        device.allocate(sequence_2)
+        device.allocate_sequence(sequence_2)
         # TODO manage control...
         # device.control(sequence_2)
         # TODO manage timing...
@@ -194,9 +194,9 @@ class Checkerboard(Protocol):
             # Wait end of first sequence
             self.wait(device)
             # Manage first sequence
-            device.free(sequence_1)
+            device.free_sequence(sequence_1)
             sequence_1 = alp.sequence.Checkerboard(seed=42)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             # TODO manage timing...
             # device.timing(sequence_1)
             device.put(sequence_1)
@@ -204,9 +204,9 @@ class Checkerboard(Protocol):
             # Wait end of second sequence
             self.wait(device)
             # Manage second sequence
-            device.free(sequence_2)
+            device.free_sequence(sequence_2)
             sequence_2 = alp.sequence.Checkerboard(seed=None)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             # TODO manage timing...
             # device.timing(sequence_2)
             device.put(sequence_2)
@@ -214,11 +214,11 @@ class Checkerboard(Protocol):
         # Wait end of first sequence
         self.wait(device)
         # Clean first sequence
-        device.free(sequence_1)
+        device.free_sequence(sequence_1)
         # Wait end of second sequence
         device.wait()
         # Clean second sequence
-        device.free(sequence_2)
+        device.free_sequence(sequence_2)
         return
 
 
@@ -239,7 +239,7 @@ class FullField(Protocol):
         device.control_projection(inversion=True)
         sequence = alp.sequence.FullField(self.footprint_array)
         # Set up sequence
-        device.allocate(sequence)
+        device.allocate_sequence(sequence)
         if self.nb_repetitions is not None and not self.infinite_loop:
             device.control_repetitions(sequence, self.nb_repetitions)
         # TODO manage timing...
@@ -250,7 +250,7 @@ class FullField(Protocol):
         # Wait sequence end
         device.wait(infinite_loop=self.infinite_loop)
         # Clean sequence
-        device.free(sequence)
+        device.free_sequence(sequence)
         return
 
 
@@ -387,13 +387,13 @@ class Film(Protocol):
         sequence_1 = alp.sequence.Checkerboard(seed=42)
         sequence_2 = alp.sequence.Checkerboard(seed=None)
         # Setup first sequence
-        device.allocate(sequence_1)
+        device.allocate_sequence(sequence_1)
         # TODO manage control...
         # device.control(sequence_1)
         # TODO manage timing...
         # device.timing(sequence_1)
         # Setup second sequence
-        device.allocate(sequence_2)
+        device.allocate_sequence(sequence_2)
         # TODO manage control...
         # device.control(sequence_2)
         # TODO manage timing...
@@ -412,9 +412,9 @@ class Film(Protocol):
             # Wait end of first sequence
             self.wait(device)
             # Manage first sequence
-            device.free(sequence_1)
+            device.free_sequence(sequence_1)
             sequence_1 = alp.sequence.Checkerboard(seed=42)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             # TODO manage timing...
             # device.timing(sequence_1)
             device.put(sequence_1)
@@ -422,9 +422,9 @@ class Film(Protocol):
             # Wait end of second sequence
             self.wait(device)
             # Manage second sequence
-            device.free(sequence_2)
+            device.free_sequence(sequence_2)
             sequence_2 = alp.sequence.Checkerboard(seed=None)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             # TODO manage timing...
             # device.timing(sequence_2)
             device.put(sequence_2)
@@ -432,9 +432,9 @@ class Film(Protocol):
         # Wait end of first sequence
         self.wait(device)
         # Clean first sequence
-        device.free(sequence_1)
+        device.free_sequence(sequence_1)
         # Wait end of second sequence
         device.wait()
         # Clean second sequence
-        device.free(sequence_2)
+        device.free_sequence(sequence_2)
         return

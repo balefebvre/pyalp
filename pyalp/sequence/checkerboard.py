@@ -68,6 +68,6 @@ class Checkerboard(Sequence):
 
     def display(self):
         self.device.invert_projection()
-        sequence_id = self.device.allocate(self.bit_planes, self.pic_num)
+        sequence_id = self.device.allocate_sequence(self.bit_planes, self.pic_num)
         self.device.timing(sequence_id, picture_time=self.picture_time)
         raise NotImplementedError()

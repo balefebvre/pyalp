@@ -18,7 +18,7 @@ class Handle(BaseHandle):
 
         self._device = Device()
         # self._device.turn_on()  # TODO remove line.
-        self._device.allocate(device_number)
+        self._device.allocate(device_number=device_number)
 
         self._is_active = True
 
@@ -34,5 +34,12 @@ class Handle(BaseHandle):
             self._is_active = False
         else:
             pass  # TODO raise warning.
+
+        return
+
+    def test_halt(self):
+        # TODO remove this method.
+
+        self._device.halt()
 
         return

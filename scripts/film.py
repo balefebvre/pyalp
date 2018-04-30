@@ -21,7 +21,7 @@ assert os.path.isfile(bin_pathname)
 assert os.path.isfile(vec_pathname)
 
 # Allocate device.
-dev = alp.device.allocate(verbose=True)
+dev = alp.device.allocate_sequence(verbose=True)
 
 # Define stimulus.
 stim = alp.stimulus.Film(bin_pathname=bin_pathname, vec_pathname=vec_pathname, rate=rate, verbose=True)

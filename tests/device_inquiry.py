@@ -4,7 +4,7 @@ import pyalp as alp
 
 
 # Allocate device
-dev = alp.device.allocate()
+dev = alp.device.allocate_sequence()
 
 # Inquire device settings
 settings = dev.inquire_settings()

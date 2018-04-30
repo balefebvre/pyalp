@@ -19,7 +19,7 @@ rate = 40.0  # frame rate [Hz]
 duration = 5.0 * 60.0  # duration [s]
 
 # Allocate device.
-dev = alp.device.allocate(verbose=True)
+dev = alp.device.allocate_sequence(verbose=True)
 
 # Define stimulus.
 stim = alp.stimulus.Rectangle(x=x, y=y, w=w, h=h, alpha=alpha, rate=rate, duration=duration, verbose=True)

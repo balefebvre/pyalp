@@ -1,6 +1,6 @@
 from ctypes import c_ulong, byref
 
-from .. import api
+from ..base import api
 from ..base.constant import *
 
 
@@ -183,7 +183,7 @@ class Sequence(object):
     def control(self, control_type, control_value):
         """TODO add docstring."""
 
-        self.device.control(self, control_type, control_value)
+        self.device.control_sequence(self, control_type, control_value)
 
         return
 
@@ -237,6 +237,6 @@ class Sequence(object):
     def free(self):
         """TODO add docstring"""
 
-        self.device.free(self)
+        self.device.free_sequence(self)
 
         return

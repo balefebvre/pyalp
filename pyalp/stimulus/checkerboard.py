@@ -145,7 +145,7 @@ class Checkerboard(Stimulus):
                 ans = device.inquire_available_memory()
                 print("Available memory before allocation of 1st sequence [number of binary pictures]: {}".format(ans))
             # Allocate memory for 1st sequence of frames.
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             # Display available memory after allocation of 1st sequence.
             if verbose:
                 ans = device.inquire_available_memory()
@@ -173,7 +173,7 @@ class Checkerboard(Stimulus):
                 ans = device.inquire_available_memory()
                 print("Available memory before allocation of 2nd sequence [number of binary pictures]: {}".format(ans))
             # Allocate memory for the 2nd sequence of frames.
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             # Display available memory after allocation of 2nd sequence.
             if verbose:
                 ans = device.inquire_available_memory()
@@ -211,7 +211,7 @@ class Checkerboard(Stimulus):
             nb_frames = self.sequence_size
             sequence_1 = pyalp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
                                                         nb_frames, self.rate)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             sequence_1.control_bit_number(1)
             sequence_1.control_binary_mode('uninterrupted')
             sequence_1.control_timing()
@@ -227,7 +227,7 @@ class Checkerboard(Stimulus):
             nb_frames = self.sequence_size
             sequence_2 = pyalp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
                                                         nb_frames, self.rate)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             sequence_2.control_bit_number(1)
             sequence_2.control_binary_mode('uninterrupted')
             sequence_2.control_timing()
@@ -250,7 +250,7 @@ class Checkerboard(Stimulus):
                 nb_frames = self.nb_frames - sequence_id_1 * self.sequence_size
             sequence_1 = pyalp.sequence.CheckerboardBis(sequence_id_1, self.check_size, self.nb_checks,
                                                         nb_frames, self.rate)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             sequence_1.control_bit_number(1)
             sequence_1.control_binary_mode('uninterrupted')
             sequence_1.control_timing()
@@ -273,7 +273,7 @@ class Checkerboard(Stimulus):
                 nb_frames = self.nb_frames - sequence_id_2 * self.sequence_size
             sequence_2 = pyalp.sequence.CheckerboardBis(sequence_id_2, self.check_size, self.nb_checks,
                                                         nb_frames, self.rate)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             sequence_2.control_bit_number(1)
             sequence_2.control_binary_mode('uninterrupted')
             sequence_2.control_timing()

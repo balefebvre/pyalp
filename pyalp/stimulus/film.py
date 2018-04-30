@@ -166,7 +166,7 @@ class Film(Stimulus):
             sequence_1 = pyalp.sequence.Film(sequence_id_1, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
             # Allocate memory for 1st sequence of frames.
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             # Control the timing properties of 1st sequence display.
             sequence_1.control_timing()
 
@@ -179,7 +179,7 @@ class Film(Stimulus):
             sequence_2 = pyalp.sequence.Film(sequence_id_2, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
             # Allocate memory for 2nd sequence of frames.
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             # Control the timing properties of 2nd sequence display.
             sequence_2.control_timing()
 
@@ -209,7 +209,7 @@ class Film(Stimulus):
             nb_frames = self.sequence_size
             sequence_1 = pyalp.sequence.Film(sequence_id_1, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             sequence_1.control_timing()
             sequence_1.load()
             sequence_1.start()
@@ -223,7 +223,7 @@ class Film(Stimulus):
             nb_frames = self.sequence_size
             sequence_2 = pyalp.sequence.Film(sequence_id_2, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             sequence_2.control_timing()
             sequence_2.load()
             sequence_2.start()
@@ -241,7 +241,7 @@ class Film(Stimulus):
             nb_frames = min(self.sequence_size, self.nb_frames - sequence_id_1 * self.sequence_size)
             sequence_1 = pyalp.sequence.Film(sequence_id_1, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
-            device.allocate(sequence_1)
+            device.allocate_sequence(sequence_1)
             sequence_1.control_timing()
             sequence_1.load()
             sequence_1.start()
@@ -257,7 +257,7 @@ class Film(Stimulus):
             nb_frames = min(self.sequence_size, self.nb_frames - sequence_id_2 * self.sequence_size)
             sequence_2 = pyalp.sequence.Film(sequence_id_2, self.bin_pathname, self.frame_ids, nb_frames,
                                              self.sequence_size, self.rate)
-            device.allocate(sequence_2)
+            device.allocate_sequence(sequence_2)
             sequence_2.control_timing()
             sequence_2.load()
             sequence_2.start()
