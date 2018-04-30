@@ -10,6 +10,6 @@ setup(
     install_requires=[
         'matplotlib',
         'numpy',
-        'pandas',
+        'pandas', 'IPython', 'traitlets'
     ],
 )

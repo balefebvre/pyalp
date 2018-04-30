@@ -64,7 +64,7 @@ class Api(object):
         return attribute
 
 
-# Retrieve Vialux ALP path.
+# Retrieve ViALUX ALP path.
 try:
     path = os.environ['ALP_PATH']
 except KeyError:
@@ -72,7 +72,7 @@ except KeyError:
     raise Exception(message)
 
 
-# Load Vialux ALP API.
+# Load ViALUX ALP API.
 try:
     api = Api(path)
 except OSError:
