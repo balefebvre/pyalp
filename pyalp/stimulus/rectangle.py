@@ -136,7 +136,7 @@ class Rectangle(Stimulus):
             ans = device.inquire_available_memory()
             print("Available memory before allocation [number of binary pictures]: {}".format(ans))
         # Allocate memory for the sequence of frames.
-        device.allocate_sequence(sequence)
+        device.allocate_sequence_bis(sequence)
         # Display available memory after allocation.
         if verbose:
             ans = device.inquire_available_memory()

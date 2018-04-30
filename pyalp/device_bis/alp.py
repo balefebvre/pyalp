@@ -27,18 +27,6 @@ class Device(BaseDevice):
 
         return
 
-    def __del__(self):
-        """Deallocate the ALP hardware system (board set)"""
-
-        if self._is_allocated:
-            # Stop device.  # TODO add condition (only if not in idle wait state).
-            time.sleep(0.5)  # TODO move line into 'stop'.
-            self.stop()
-            # Free device.
-            self.deallocate()
-
-        return
-
     def allocate(self, device_number=0):
         """Allocate ALP device.
 
@@ -53,9 +41,8 @@ class Device(BaseDevice):
         device_number_ = c_long(device_number)
         init_flag_ = c_long(ALP_DEFAULT)
         device_id_ = c_ulong(ALP_DEFAULT)
-        device_id_ptr_ = byref(device_id_)
         # Call function.
-        ret_val_ = self._api.AlpDevAlloc(device_number_, init_flag_, device_id_ptr_)
+        ret_val_ = self._api.AlpDevAlloc(device_number_, init_flag_, byref(device_id_))
         # Handle error (if necessary).
         if ret_val_ != ALP_OK:  # TODO raise appropriate errors.
             if ret_val_ == ALP_ADDR_INVALID:
@@ -132,9 +119,8 @@ class Device(BaseDevice):
         device_id_ = c_ulong(self.id)
         inquire_type_ = c_ulong(inquire_type)
         user_var_ = c_ulong(ALP_DEFAULT)
-        user_var_ptr_ = byref(user_var_)
         # Call function.
-        ret_val_ = self._api.AlpDevInquire(device_id_, inquire_type_, user_var_ptr_)
+        ret_val_ = self._api.AlpDevInquire(device_id_, inquire_type_, byref(user_var_))
         # Handle error (if necessary).
         if ret_val_ != ALP_OK:
             raise NotImplementedError(ret_val_)
@@ -170,6 +156,126 @@ class Device(BaseDevice):
         self._is_allocated = False
 
         return
+
+    def allocate_sequence(self, bit_planes, number_pictures):
+        """Provide ALP memory for a sequence of pictures."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        bit_planes_ = c_long(bit_planes)
+        pic_num_ = c_long(number_pictures)
+        sequence_id_ = c_ulong(ALP_DEFAULT)
+        # Call function.
+        ret_val_ = self._api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, byref(sequence_id_))
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+        # Prepare result.
+        sequence_id = sequence_id_.value
+
+        return sequence_id
+
+    # TODO add missing methods.
+
+    def put_sequence(self, sequence_id, pic_offset, pic_load, user_array):
+        """Load data into the ALP memory."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence_id)
+        pic_offset_ = c_ulong(pic_offset)
+        pic_load_ = c_ulong(pic_load)
+        user_array_ = utils.numpy_to_ctypes(user_array)  # TODO improve code notation.
+        user_array_ptr_ = cast(user_array_, c_void_p)  # TODO byref instead of cast?
+        # Call function.
+        ret_val_ = self._api.AlpSeqPut(device_id_, sequence_id_, pic_offset_, pic_load_, user_array_ptr_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError()
+
+        return
+
+    def free_sequence(self, sequence_id):
+        """Free ALP memory used by a sequence of pictures."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence_id)
+        # Call function.
+        ret_val_ = self._api.AlpSeqFree(device_id_, sequence_id_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    # TODO add missing method.
+
+    def start_projection(self, sequence_id):
+        """Display the sequence of pictures."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence_id)
+        # Call function.
+        ret_val_ = self._api.AlpProjStart(device_id_, sequence_id_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    # TODO add missing method.
+
+    def wait_projection(self):
+        """Wait for the completion of the running sequence display."""
+
+        # Prepare argument.
+        device_id_ = c_ulong(self.id)
+        # Call function.
+        ret_val_ = self._api.AlpProjWait(device_id_)
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+
+        return
+
+    # TODO add missing method.
+
+    ####################################################################################################################
+
+    # TODO get rid off the following methods (i.e. remove usages).
+
+    def allocate_sequence_bis(self, sequence):
+        """Allocate sequence."""
+
+        # Prepare arguments.
+        device_id_ = c_ulong(self.id)
+        bit_planes_ = c_long(sequence.bit_planes)
+        pic_num_ = c_long(sequence.pic_num)
+        sequence_id_ = c_ulong(ALP_DEFAULT)
+        # Call function.
+        ret_val_ = self._api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, byref(sequence_id_))
+        # Handle error (if necessary).
+        if ret_val_ != ALP_OK:
+            raise NotImplementedError(ret_val_)
+        # Prepare result.
+        sequence_id = sequence_id_.value
+        # Update attributes.
+        sequence.id = sequence_id
+        sequence.device = self
+
+        return
+
+    def free_sequence_bis(self, sequence):
+        """Free sequence."""
+        device_id_ = c_ulong(self.id)
+        sequence_id_ = c_ulong(sequence.id)
+        ret_val_ = self._api.AlpSeqFree(device_id_, sequence_id_)
+        if ret_val_ == ALP_OK:
+            return
+        else:
+            raise Exception("AlpSeqFree: {}".format(ret_val_))
 
     ####################################################################################################################
 
@@ -266,22 +372,6 @@ class Device(BaseDevice):
             raise Exception("AlpDevControl: {}".format(ret_val))
         # Update attribute.
         self._is_allocated = True
-
-        return
-
-    def deallocate(self):
-        """Deallocate the ALP hardware system (board set)."""
-
-        # TODO add comment or remove.
-        time.sleep(0.5)
-        # Deallocate device.
-        device_id_ = c_ulong(self.id)
-        ret_val_ = self._api.AlpDevFree(device_id_)
-        # Check returned value.
-        if ret_val_ != ALP_OK:
-            raise Exception("AlpDevFree: {}".format(ret_val_))
-        # Update attributes.
-        self._is_allocated = False
 
         return
 
@@ -472,35 +562,6 @@ class Device(BaseDevice):
             self.stop()
         return
 
-    def allocate_sequence(self, sequence):
-        """Allocate sequence"""
-        device_id_ = c_ulong(self.id)
-        bit_planes_ = c_long(sequence.bit_planes)
-        pic_num_ = c_long(sequence.pic_num)
-        sequence_id_ = c_ulong(ALP_DEFAULT)
-        sequence_id_ptr_ = byref(sequence_id_)
-        ret_val_ = self._api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, sequence_id_ptr_)
-        if ret_val_ == ALP_OK:
-            sequence.id = sequence_id_.value
-            sequence.device = self
-            return
-        else:
-            raise Exception("AlpSeqAlloc: {}".format(ret_val_))
-
-    def allocate_bis(self, bit_planes, pic_num):
-        """Allocate sequence (bis)"""
-        device_id_ = c_ulong(self.id)
-        bit_planes_ = c_long(bit_planes)
-        pic_num_ = c_long(pic_num)
-        sequence_id_ = c_ulong(ALP_DEFAULT)
-        sequence_id_ptr_ = byref(sequence_id_)
-        ret_val_ = self._api.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, sequence_id_ptr_)
-        if ret_val_ == ALP_OK:
-            sequence_id = sequence_id_.value
-            return sequence_id
-        else:
-            raise Exception("AlpSeqAlloc: {}".format(ret_val_))
-
     def put(self, sequence):  # sequence_id, user_array, pic_offset=ALP_DEFAULT, pic_load=ALP_DEFAULT):
         """Put sequence"""
         device_id_ = c_ulong(self.id)
@@ -535,16 +596,6 @@ class Device(BaseDevice):
                 return
             else:
                 raise Exception("AlpProjStart: {}".format(ret_val_))
-
-    def free_sequence(self, sequence):
-        """Free sequence."""
-        device_id_ = c_ulong(self.id)
-        sequence_id = c_ulong(sequence.id)
-        ret_val_ = self._api.AlpSeqFree(device_id_, sequence_id)
-        if ret_val_ == ALP_OK:
-            return
-        else:
-            raise Exception("AlpSeqFree: {}".format(ret_val_))
 
     def wait(self, infinite_loop=False, active=True):
         """Wait sequence completion.

@@ -18,7 +18,7 @@ plt.plot(footprint_array)
 plt.show()
 
 # Allocate device
-dev = alp.device.allocate_sequence()
+dev = alp.device.allocate_sequence_bis()
 
 # Define protocol
 pro = alp.protocol.FullField(footprint_array)

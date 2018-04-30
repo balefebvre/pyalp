@@ -17,7 +17,7 @@ duration = 45.0 * 60.0  # s  # duration
 # sequence_size = 250  # sequence size
 
 # Allocate device.
-dev = alp.device.allocate_sequence(verbose=True)
+dev = alp.device.allocate_sequence_bis(verbose=True)
 
 # Define stimulus.
 stim = alp.stimulus.Checkerboard(check_size=check_size, nb_checks=nb_checks, rate=rate, duration=duration, verbose=True)

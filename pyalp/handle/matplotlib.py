@@ -30,17 +30,15 @@ class Handle(BaseHandle):
         """Release Matplotlib handle."""
 
         if self._is_active:
-            self._device.halt()  # TODO execute line if necessary only.
+            self._device.halt()
             self._device.free()
             self._device.turn_off()
             self._is_active = False
-        else:
-            pass  # TODO raise warning.
 
         return
 
     def display(self):
-        # TODO add docstring.
+        # TODO remove this method.
 
         print("MatplotlibHandle: display")
         self._device.display()

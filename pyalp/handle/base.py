@@ -36,3 +36,9 @@ class Handle(metaclass=ABCMeta):
         """Release the handle."""
 
         raise NotImplementedError()
+
+    @abstractmethod
+    def display_rectangle(self):
+        """Display a rectangle."""
+
+        raise NotImplementedError()

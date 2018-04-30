@@ -237,6 +237,6 @@ class Sequence(object):
     def free(self):
         """TODO add docstring"""
 
-        self.device.free_sequence(self)
+        self.device.free_sequence_bis(self)
 
         return
