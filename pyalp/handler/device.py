@@ -47,6 +47,15 @@ class DeviceHandler:
 
         print("Display rectangle...")
 
+        # TODO inquire height and width.
+        height = self._api.inquire_device_height(self._id)
+        width = self._api.inquire_device_width(self._id)
+        print("height, width: {}, {}".format(height, width))
+        # TODO allocate sequence.
+        bit_planes = 8
+        number_pictures = 10
+        sequence_id = self._api.allocate_sequence(self._id, bit_planes, number_pictures)
+        print("sequence_id: {}".format(sequence_id))
         # TODO complete.
 
         return

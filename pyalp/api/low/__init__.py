@@ -25,6 +25,11 @@ class IAPI(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
+    def allocate_sequence(self, device_id: int, bit_planes: int, number_pictures: int) -> int:
+
+        raise NotImplementedError()
+
+    @abstractmethod
     def seppuku(self) -> None:
 
         raise NotImplementedError()

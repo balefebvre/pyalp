@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 from .low.mock import API as MockAPI
 from .low.alp import API as ALPAPI
+from .low.constant import *
 
 
 class IAPI(metaclass=ABCMeta):
@@ -36,6 +37,18 @@ class API(IAPI):
 
         return device_id
 
+    def inquire_device_height(self, device_id: int) -> int:
+
+        device_height = self._api.inquire_device(device_id, DEV_DISPLAY_HEIGHT)
+
+        return device_height
+
+    def inquire_device_width(self, device_id: int) -> int:
+
+        device_width = self._api.inquire_device(device_id, DEV_DISPLAY_WIDTH)
+
+        return device_width
+
     def halt_device(self, device_id: int) -> None:
 
         self._api.halt_device(device_id)
@@ -47,6 +60,12 @@ class API(IAPI):
         self._api.free_device(device_id)
 
         return
+
+    def allocate_sequence(self, device_id: int, bit_planes: int, number_pictures: int) -> int:
+
+        sequence_id = self._api.allocate_sequence(device_id, bit_planes, number_pictures)
+
+        return sequence_id
 
     def seppuku(self) -> None:
 

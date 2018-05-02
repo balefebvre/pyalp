@@ -217,7 +217,32 @@ class Adapter:
 
     def seq_alloc(self, device_id, bit_planes, pic_num):
 
-        raise NotImplementedError()
+        # Prepare arguments.
+        device_id_ = c_ulong(device_id)
+        bit_planes_ = c_long(bit_planes)
+        pic_num_ = c_ulong(pic_num)
+        sequence_id_ = c_ulong(ALP_DEFAULT)
+        # Call function.
+        ret_val = self._dll.AlpSeqAlloc(device_id_, bit_planes_, pic_num_, byref(sequence_id_))
+        # Handle error (if necessary).
+        if ret_val == ALP_OK:
+            pass
+        elif ret_val == ALP_NOT_AVAILABLE:
+            raise NotAvailableError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotReadyError()
+        elif ret_val == ALP_PARM_INVALID:
+            raise ParmInvalidError()
+        elif ret_val == ALP_ADDR_INVALID:
+            raise AddrInvalidError()
+        elif ret_val == ALP_MEMORY_FULL:
+            raise MemoryFullError()
+        else:
+            raise NotImplementedError(ret_val)
+        # Prepare result.
+        sequence_id = sequence_id_.value
+
+        return sequence_id
 
     def seq_control(self, device_id, sequence_id, control_type, control_value):
 

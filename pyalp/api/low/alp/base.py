@@ -169,6 +169,13 @@ class API(IAPI):
 
         return
 
+    def allocate_sequence(self, device_id: int, bit_planes: int, number_pictures: int) -> int:
+
+        # Call function.
+        sequence_id = self._dll.seq_alloc(device_id, bit_planes, number_pictures)
+
+        return sequence_id
+
     def seppuku(self) -> None:
 
         # Call function.

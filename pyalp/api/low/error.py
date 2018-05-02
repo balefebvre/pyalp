@@ -56,3 +56,8 @@ class DeviceRemovedError(Exception):
 class CommError(Exception):
 
     pass
+
+
+class MemoryFullError(Exception):
+
+    pass
