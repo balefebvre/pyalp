@@ -1,11 +1,13 @@
-from typing import Optional
+from typing import Optional, Union
 
-from ..api.high import API
+from pyalp.api.low.alp import API as ALPAPI
+from pyalp.api.low.alp import API as MockAPI
+from pyalp.api.low.constant import *
 
 
 class DeviceHandler:
 
-    def __init__(self, serial_number: Optional[int], api: API) -> None:
+    def __init__(self, serial_number: Optional[int], api: Union[ALPAPI, MockAPI]) -> None:
 
         self._serial_number = serial_number
         self._api = api
@@ -48,8 +50,10 @@ class DeviceHandler:
         print("Display rectangle...")
 
         # TODO inquire height and width.
-        height = self._api.inquire_device_height(self._id)
-        width = self._api.inquire_device_width(self._id)
+        # height = self._api.inquire_device_height(self._id)
+        # width = self._api.inquire_device_width(self._id)
+        height = self._api.inquire_device(self._id, DEV_DISPLAY_HEIGHT)
+        width = self._api.inquire_device(self._id, DEV_DISPLAY_WIDTH)
         print("height, width: {}, {}".format(height, width))
         # TODO allocate sequence.
         bit_planes = 8

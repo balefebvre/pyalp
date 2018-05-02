@@ -6,12 +6,17 @@ from typing import Optional
 class IAPI(metaclass=ABCMeta):
 
     @abstractmethod
-    def allocate_device(self, device_number: Optional[int] = None) -> int:
+    def allocate_device(self, device_number: Optional[int] = None) -> object:
 
         raise NotImplementedError()
 
     @abstractmethod
     def control_device(self, device_id: int, control_type: int, control_value: int) -> None:
+
+        raise NotImplementedError()
+
+    @abstractmethod
+    def inquire_device(self, device_id: int, inquire_type: int) -> int:
 
         raise NotImplementedError()
 

@@ -2,8 +2,7 @@ if __name__ == '__main__':
 
     import argparse
 
-    from .api import load_api
-    from .handler import handle_device
+    import pyalp.api
 
     # Command-line parsing.
     parser = argparse.ArgumentParser()
@@ -16,10 +15,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load api.
-    api = load_api(args.api)
+    api = pyalp.api.load_api(args.api)
 
     # Handle device.
-    dmd = handle_device(serial_number=args.serial_number, api=api)
+    dmd = api.handle_device(serial_number=args.serial_number)
 
     # Allocate device.
     dmd.allocate()

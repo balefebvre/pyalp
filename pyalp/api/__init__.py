@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .high import API as HighLevelAPI
+from pyalp.api.high import API as HighLevelAPI
 
 
 def load_api(argument: Optional[str] = None) -> HighLevelAPI:
