@@ -61,3 +61,13 @@ class CommError(Exception):
 class MemoryFullError(Exception):
 
     pass
+
+
+class SeqInUseError(Exception):
+
+    pass
+
+
+class HaltedError(Exception):
+
+    pass

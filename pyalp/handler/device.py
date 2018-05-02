@@ -53,10 +53,24 @@ class DeviceHandler:
         print("height, width: {}, {}".format(height, width))
         # TODO allocate sequence.
         bit_planes = 8
-        number_pictures = 10
+        number_pictures = 100
         sequence_id = self._api.allocate_sequence(self._id, bit_planes, number_pictures)
         print("sequence_id: {}".format(sequence_id))
-        # TODO complete.
+        # TODO put sequence.
+        import numpy as np
+        picture_offset = 0
+        data = 255 * np.ones(number_pictures * height * width, dtype=np.uint8)
+        self._api.put_sequence(self._id, sequence_id, picture_offset, number_pictures, data)
+        print("put sequence")
+        # # TODO start sequence.
+        # self._api.start_projection(self._id, sequence_id)
+        # print("start projection")
+        # # TODO wait end of projection
+        # self._api.?(self._id)
+        # print("end projection")
+        # TODO free sequence.
+        self._api.free_sequence(self._id, sequence_id)
+        print("free sequence")
 
         return
 

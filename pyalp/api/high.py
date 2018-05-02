@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from numpy import ndarray
 from typing import Optional, Union
 
 from .low.mock import API as MockAPI
@@ -66,6 +67,18 @@ class API(IAPI):
         sequence_id = self._api.allocate_sequence(device_id, bit_planes, number_pictures)
 
         return sequence_id
+
+    def put_sequence(self, device_id: int, sequence_id: int, picture_offset: int, number_pictures: int, data: ndarray) -> None:
+
+        self._api.put_sequence(device_id, sequence_id, picture_offset, number_pictures, data)
+
+        return
+
+    def free_sequence(self, device_id: int, sequence_id: int) -> None:
+
+        self._api.free_sequence(device_id, sequence_id)
+
+        return
 
     def seppuku(self) -> None:
 

@@ -3,6 +3,7 @@ from numpy import ndarray
 
 from ..error import *
 from .constant import *
+from .utils import c_ubyte_array
 
 
 class Adapter:
@@ -259,11 +260,60 @@ class Adapter:
 
     def seq_put(self, device_id, sequence_id, pic_offset, pic_load, user_array):
 
-        raise NotImplementedError()
+        # Prepare arguments.
+        device_id_ = c_ulong(device_id)
+        sequence_id_ = c_ulong(sequence_id)
+        pic_offset_ = c_long(pic_offset)
+        pic_load_ = c_long(pic_load)
+        user_array_ = c_ubyte_array(user_array)
+        # Call function.
+        ret_val = self._dll.AlpSeqPut(device_id_, sequence_id_, pic_offset_, pic_load_, user_array_)
+        # Handle error (if necessary).
+        if ret_val == ALP_OK:
+            pass
+        elif ret_val == ALP_NOT_AVAILABLE:
+            raise NotAvailableError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotReadyError()
+        elif ret_val == ALP_PARM_INVALID:
+            raise ParmInvalidError()
+        elif ret_val == ALP_ERROR_COMM:
+            raise CommError()
+        elif ret_val == ALP_SEQ_IN_USE:
+            raise SeqInUseError()
+        elif ret_val == ALP_HALTED:
+            raise HaltedError()
+        elif ret_val == ALP_ADDR_INVALID:
+            raise AddrInvalidError()
+        else:
+            raise NotImplementedError(ret_val)
+
+        return
 
     def seq_free(self, device_id, sequence_id):
 
-        raise NotImplementedError()
+        # Prepare arguments.
+        device_id_ = c_ulong(device_id)
+        sequence_id_ = c_ulong(sequence_id)
+        # Call function.
+        ret_val = self._dll.AlpSeqFree(device_id_, sequence_id_)
+        # Handle error (if necessary).
+        if ret_val == ALP_OK:
+            pass
+        elif ret_val == ALP_NOT_AVAILABLE:
+            raise NotAvailableError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotReadyError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotIdleError()
+        elif ALP_SEQ_IN_USE:
+            raise SeqInUseError()
+        elif ALP_PARM_INVALID:
+            raise ParmInvalidError()
+        else:
+            raise NotImplementedError(ret_val)
+
+        return
 
     def proj_control(self, device_id, control_type, control_value):
 

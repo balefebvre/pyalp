@@ -176,6 +176,20 @@ class API(IAPI):
 
         return sequence_id
 
+    def put_sequence(self, device_id: int, sequence_id: int, picture_offset: int, number_pictures: int, data: ndarray) -> None:
+
+        # Call function.
+        self._dll.seq_put(device_id, sequence_id, picture_offset, number_pictures, data)
+
+        return
+
+    def free_sequence(self, device_id: int, sequence_id: int) -> None:
+
+        # Call function.
+        self._dll.seq_free(device_id, sequence_id)
+
+        return
+
     def seppuku(self) -> None:
 
         # Call function.
