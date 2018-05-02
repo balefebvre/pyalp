@@ -34,7 +34,6 @@ class Adapter:
         device_id = device_number
         args = dict(
             function='dev_alloc',
-            device_number=device_number,
             init_flag=init_flag,
         )
         # Call function.
@@ -54,8 +53,12 @@ class Adapter:
             raise InitError()
         elif ret_val == MOCK_LOADER_VERSION:
             raise LoaderVersionError()
+        elif ret_val == MOCK_ERROR_COMM:
+            raise CommError()
+        elif ret_val == MOCK_DEVICE_REMOVED:
+            raise DeviceRemovedError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
         # Prepare result.
         device_id = ans['payload']
 
@@ -72,10 +75,9 @@ class Adapter:
         # Prepare arguments.
         args = dict(
             function='dev_halt',
-            device_id=device_id,
         )
         # Call function.
-        ans = self._connection.send(args)
+        ans = self._send(device_id, args)
         # Handle error (if necessary).
         ret_val = ans['ret_val']
         if ret_val == MOCK_OK:
@@ -83,7 +85,7 @@ class Adapter:
         elif ret_val == MOCK_NOT_AVAILABLE:
             raise NotAvailableError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
 
         return
 
@@ -98,10 +100,9 @@ class Adapter:
         # Prepare arguments.
         args = dict(
             function='dev_free',
-            device_id=device_id,
         )
         # Call function.
-        ans = self._connection.send(args)
+        ans = self._send(device_id, args)
         # Handle error (if necessary).
         ret_val = ans['ret_val']
         if ret_val == MOCK_OK:
@@ -113,7 +114,7 @@ class Adapter:
         elif ret_val == MOCK_NOT_IDLE:
             raise NotIdleError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
 
         return
 

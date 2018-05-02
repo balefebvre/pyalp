@@ -45,8 +45,12 @@ class Adapter:
             raise InitError()
         elif ret_val == ALP_LOADER_VERSION:
             raise LoaderVersionError()
+        elif ret_val == ALP_ERROR_COMM:
+            raise CommError()
+        elif ret_val == ALP_DEVICE_REMOVED:
+            raise DeviceRemovedError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
         # Prepare result.
         device_id = device_id_.value
 
@@ -88,7 +92,7 @@ class Adapter:
         elif ret_val == ALP_ERROR_POWER_DOWN:
             raise PowerDownError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
 
         return
 
@@ -123,7 +127,7 @@ class Adapter:
         elif ret_val == ALP_DEVICE_REMOVED:
             raise DeviceRemovedError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
         # Prepare result.
         inquire_value = user_var_.value
 
@@ -157,7 +161,7 @@ class Adapter:
         # elif ret_val == ALP_PARM_INVALID:
         #     raise ParmInvalidError()
         # else:
-        #     raise NotImplementedError()
+        #     raise NotImplementedError(ret_val)
         #
         # return
 
@@ -181,7 +185,7 @@ class Adapter:
         elif ret_val == ALP_NOT_AVAILABLE:
             raise NotAvailableError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
 
         return
 
@@ -207,7 +211,7 @@ class Adapter:
         elif ret_val == ALP_NOT_IDLE:
             raise NotIdleError()
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(ret_val)
 
         return
 
@@ -291,3 +295,9 @@ class Adapter:
     # def led_inquire_ex(self, device_id, led_id, inquire_type):
     #
     #     raise NotImplementedError()
+
+    def seppuku(self):
+
+        pass
+
+        return

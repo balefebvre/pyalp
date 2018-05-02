@@ -51,3 +51,8 @@ class PowerDownError(Exception):
 class DeviceRemovedError(Exception):
 
     pass
+
+
+class CommError(Exception):
+
+    pass

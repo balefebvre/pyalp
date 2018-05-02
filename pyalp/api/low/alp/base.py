@@ -168,3 +168,10 @@ class API(IAPI):
         self._dll.dev_free(device_id)
 
         return
+
+    def seppuku(self) -> None:
+
+        # Call function.
+        self._dll.seppuku()
+
+        return

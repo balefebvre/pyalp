@@ -40,5 +40,8 @@ if __name__ == '__main__':
         IPython.embed(config=config)
         # IPython.embed(display_banner=False)
 
+    # Release device.
+    dmd.release()
+
     # Clean up.
     api.seppuku()
