@@ -80,6 +80,18 @@ class API(IAPI):
 
         return
 
+    def start_projection(self, device_id: int, sequence_id: int) -> None:
+
+        self._api.start_projection(device_id, sequence_id)
+
+        return
+
+    def wait_projection(self, device_id: int) -> None:
+
+        self._api.wait_projection(device_id)
+
+        return
+
     def seppuku(self) -> None:
 
         self._api.seppuku()

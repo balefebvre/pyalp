@@ -190,6 +190,20 @@ class API(IAPI):
 
         return
 
+    def start_projection(self, device_id: int, sequence_id: int) -> None:
+
+        # Call function.
+        self._dll.proj_start(device_id, sequence_id)
+
+        return
+
+    def wait_projection(self, device_id: int) -> None:
+
+        # Call function.
+        self._dll.proj_wait(device_id)
+
+        return
+
     def seppuku(self) -> None:
 
         # Call function.

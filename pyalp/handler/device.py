@@ -62,12 +62,12 @@ class DeviceHandler:
         data = 255 * np.ones(number_pictures * height * width, dtype=np.uint8)
         self._api.put_sequence(self._id, sequence_id, picture_offset, number_pictures, data)
         print("put sequence")
-        # # TODO start sequence.
-        # self._api.start_projection(self._id, sequence_id)
-        # print("start projection")
-        # # TODO wait end of projection
-        # self._api.?(self._id)
-        # print("end projection")
+        # TODO start sequence.
+        self._api.start_projection(self._id, sequence_id)
+        print("start projection")
+        # TODO wait end of projection
+        self._api.wait_projection(self._id)
+        print("end projection")
         # TODO free sequence.
         self._api.free_sequence(self._id, sequence_id)
         print("free sequence")

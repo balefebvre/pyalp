@@ -41,6 +41,16 @@ class IAPI(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
+    def start_projection(self, device_id: int, sequence_id: int) -> None:
+
+        raise NotImplementedError()
+
+    @abstractmethod
+    def wait_projection(self, device_id: int) -> None:
+
+        raise NotImplementedError()
+
+    @abstractmethod
     def seppuku(self) -> None:
 
         raise NotImplementedError()

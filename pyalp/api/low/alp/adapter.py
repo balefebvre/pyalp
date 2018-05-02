@@ -331,9 +331,28 @@ class Adapter:
     #
     #     raise NotImplementedError()
 
-    def proj_start(self, device_id, sequence_id):
+    def proj_start(self, device_id: int, sequence_id: int) -> None:
 
-        raise NotImplementedError()
+        # Prepare arguments.
+        device_id_ = c_ulong(device_id)
+        sequence_id_ = c_ulong(sequence_id)
+        # Call function.
+        ret_val = self._dll.AlpProjStart(device_id_, sequence_id_)
+        # Handle error (if necessary).
+        if ret_val == ALP_OK:
+            pass
+        elif ret_val == ALP_NOT_AVAILABLE:
+            raise NotAvailableError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotReadyError()
+        elif ret_val == ALP_SEQ_IN_USE:
+            raise SeqInUseError()
+        elif ret_val == ALP_PARM_INVALID:
+            raise ParmInvalidError()
+        else:
+            raise NotImplementedError(ret_val)
+
+        return
 
     def proj_start_cont(self, device_id, sequence_id):
 
@@ -343,9 +362,25 @@ class Adapter:
 
         raise NotImplementedError()
 
-    def proj_wait(self, device_id):
+    def proj_wait(self, device_id: int) -> None:
 
-        raise NotImplementedError()
+        # Prepare argument.
+        device_id_ = c_ulong(device_id)
+        # Call function.
+        ret_val = self._dll.AlpProjWait(device_id_)
+        # Handle error (if necessary).
+        if ret_val == ALP_OK:
+            pass
+        elif ret_val == ALP_NOT_AVAILABLE:
+            raise NotAvailableError()
+        elif ret_val == ALP_NOT_READY:
+            raise NotReadyError()
+        elif ret_val == ALP_PARM_INVALID:
+            raise ParmInvalidError()
+        else:
+            raise NotImplementedError(ret_val)
+
+        return
 
     def led_alloc(self, device_id, led_type, user_var):
 
