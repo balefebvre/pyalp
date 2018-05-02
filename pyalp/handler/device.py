@@ -4,10 +4,8 @@ from ..api.high import API
 
 
 class DeviceHandler:
-    # TODO add docstring.
 
     def __init__(self, serial_number: Optional[int], api: API) -> None:
-        # TODO add docstring.
 
         self._serial_number = serial_number
         self._api = api
@@ -17,8 +15,7 @@ class DeviceHandler:
 
         return
 
-    def allocate(self):
-        # TODO add docstring.
+    def allocate(self) -> None:
 
         if not self._is_allocated:
             if self._serial_number is None:
@@ -29,13 +26,43 @@ class DeviceHandler:
 
         return
 
-    def release(self):
-        # TODO add docstring.
+    def release(self) -> None:
 
         if self._is_allocated:
             self._api.halt_device(self._id)
             self._api.free_device(self._id)
-            self._api.kill_device(self._id)
             self._is_allocated = False
+
+        return
+
+    def show_info(self) -> None:
+
+        print("Show info...")
+
+        # TODO complete.
+
+        return
+
+    def display_rectangle(self) -> None:
+
+        print("Display rectangle...")
+
+        # TODO complete.
+
+        return
+
+    def display_checkerboard(self) -> None:
+
+        print("Display checkerboard...")
+
+        # TODO complete.
+
+        return
+
+    def display_film(self) -> None:
+
+        print("Display film...")
+
+        # TODO complete.
 
         return
