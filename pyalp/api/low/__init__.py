@@ -36,6 +36,11 @@ class IAPI(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
+    def control_sequence(self, device_id: int, sequence_id: int, control_type: int, control_value: int) -> None:
+
+        raise NotImplementedError()
+
+    @abstractmethod
     def put_sequence(self, device_id: int, sequence_id: int, picture_offset: int, number_pictures: int, data: ndarray) -> None:
 
         raise NotImplementedError()
@@ -47,6 +52,11 @@ class IAPI(metaclass=ABCMeta):
 
     @abstractmethod
     def start_projection(self, device_id: int, sequence_id: int) -> None:
+
+        raise NotImplementedError()
+
+    @abstractmethod
+    def halt_projection(self, device_id: int) -> None:
 
         raise NotImplementedError()
 

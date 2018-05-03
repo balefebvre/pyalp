@@ -176,6 +176,13 @@ class API(IAPI):
 
         return sequence_id
 
+    def control_sequence(self, device_id: int, sequence_id: int, control_type: int, control_value: int) -> None:
+
+        # Call function.
+        self._dll.seq_control(device_id, sequence_id, control_type, control_value)
+
+        return
+
     def put_sequence(self, device_id: int, sequence_id: int, picture_offset: int, number_pictures: int, data: ndarray) -> None:
 
         # Call function.
@@ -194,6 +201,13 @@ class API(IAPI):
 
         # Call function.
         self._dll.proj_start(device_id, sequence_id)
+
+        return
+
+    def halt_projection(self, device_id: int) -> None:
+
+        # Call function.
+        self._dll.proj_halt(device_id)
 
         return
 
