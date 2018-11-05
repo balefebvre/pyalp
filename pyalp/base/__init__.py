@@ -1,7 +1,7 @@
 from .api import path, api
 
 from .constant import *
-from .type import tAlpProjProgress
+from .type import TAlpProjProgress
 
 
 __all__ = [

@@ -625,7 +625,7 @@ class Device(object):
         if inquire_type is 'progress':
             device_id_ = c_ulong(self.id)
             inquire_type_ = c_long(ALP_PROJ_PROGRESS)
-            user_struct_ = tAlpProjProgress()
+            user_struct_ = TAlpProjProgress()
             user_struct_ptr_ = byref(user_struct_)
             ret_val_ = api.AlpProjInquireEx(device_id_, inquire_type_, user_struct_ptr_)
             if ret_val_ == ALP_OK:

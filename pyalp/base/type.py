@@ -3,7 +3,7 @@ from ctypes import Structure, c_ulong
 from .constant import *
 
 
-class tAlpProjProgress(Structure):
+class TAlpProjProgress(Structure):
 
     _fields_ = [
         ('CurrentQueueId', c_ulong),

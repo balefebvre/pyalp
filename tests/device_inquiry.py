@@ -2,7 +2,6 @@ import pprint
 import pyalp as alp
 
 
-
 # Allocate device
 dev = alp.device.allocate()
 

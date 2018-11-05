@@ -1,6 +1,6 @@
 # Special value
 ALP_DEFAULT = 0
-ALP_INVALID_ID = 2 ** 32 - 1  # ulong maximun
+ALP_INVALID_ID = 2 ** 32 - 1  # ulong maximum
 
 # Return value
 ALP_OK = 0
@@ -160,16 +160,19 @@ ALP_LED_ALLOC_PARAMS = 2101
 #     if key[0:4] == "ALP_"
 # ])
 #
+#
 # def constant_to_string(constant):
 #     """TODO add docstring"""
 #     string = look_up_table[constant]
 #     return string
+
 
 dmd_type_look_up_table = dict([
     (value, key)
     for key, value in globals().items()
     if key[0:12] == "ALP_DMDTYPE_"
 ])
+
 
 def dmd_type_constant_to_string(dmd_type_constant):
     """TODO add docstring"""
