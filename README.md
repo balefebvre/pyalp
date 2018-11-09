@@ -29,3 +29,13 @@ Vialux.
 ```
 source activate alp
 ```
+
+## Installation
+
+### Windows
+- Install `Git for Windows`.
+- Clone `git://github.com/balefebvre/pyalp.git`.
+- Install `Python 3.6`.
+- Install `PyCharm Community`.
+- Run `pip install -e .`.
+- Define `ALP_PATH`.
